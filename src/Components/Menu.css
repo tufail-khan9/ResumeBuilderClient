@@ -1,0 +1,15 @@
+.navbar {
+  background-color: #3FA0EF;
+  animation: slideIn 0.5s ease-in-out;
+}
+
+.navbar-nav .nav-link {
+  color: white;
+  font-weight: bold;
+  transition: transform 0.3s ease-in-out;
+  background-color: transparent; /* Remove any specific background color */
+}
+
+.navbar-nav .nav-link:hover {
+  transform: translateY(-2px);
+}
