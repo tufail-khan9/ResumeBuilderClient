@@ -1,6 +1,6 @@
 import React from 'react';
 
-const DummyHomePage = ({ username }) => {
+const HomePage = ({ username }) => {
   return (
     <div>
       <h1>Welcome, {username}!</h1>
@@ -10,4 +10,4 @@ const DummyHomePage = ({ username }) => {
   );
 };
 
-export default DummyHomePage;
+export default HomePage;

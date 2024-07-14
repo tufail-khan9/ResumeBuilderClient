@@ -1,51 +1,65 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
-import axios from './AxiosConfig'; // Import axios here
-import SuccessMessagePopup from './SuccessMessagePopup'; // Import SuccessMessagePopup component
+import axios from './AxiosConfig';
+import SuccessMessagePopup from './SuccessMessagePopup';
 import './RegistrationForm.css';
 
+// Validation schema
+const validationSchema = Yup.object().shape({
+  firstName: Yup.string().required('First Name is required'),
+  lastName: Yup.string().required('Last Name is required'),
+  email: Yup.string().required('Email is required').email('Email is invalid'),
+  password: Yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password'), null], 'Passwords must match')
+    .required('Confirm Password is required'),
+  contactNumber: Yup.string().required('Contact Number is required'),
+  userType: Yup.string().required('User Type is required'),
+});
+
 function RegistrationForm({ toggleForm }) {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [contactNumber, setContactNumber] = useState('');
-  const [userType, setUserType] = useState('job_seeker');
+  const { register, handleSubmit, formState: { errors, isSubmitted }, trigger } = useForm({
+    resolver: yupResolver(validationSchema),
+    mode: 'onBlur', // Validate fields on blur
+  });
+
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [showPopup, setShowPopup] = useState(false);
 
-  const handleUserTypeChange = (event) => {
-    setUserType(event.target.value);
+  const onSubmit = (data) => {
+    axios.post('User/RegisterUser', data)
+      .then(response => {
+        setSuccessMessage("User registered successfully!");
+        setShowPopup(true);
+        setTimeout(() => {
+          setShowPopup(false);
+          toggleForm('login');
+        }, 2000);
+      })
+      .catch(error => {
+        setErrorMessage("There was an error creating the user!");
+        console.error("There was an error creating the user!", error);
+      });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    axios.post('User/RegisterUser', {
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      password: password,
-      confirmPassword: confirmPassword,
-      contactNumber: contactNumber,
-      userType: userType
-    })
-    .then(response => {
-      setSuccessMessage("User registered successfully!");
-      setShowPopup(true);
-      setTimeout(() => {
-        setShowPopup(false);
-        toggleForm('login'); // Redirect to login form
-      }, 2000); // Display popup for 2 seconds before redirecting
-    })
-    .catch(error => {
-      setErrorMessage("There was an error creating the user!");
-      console.error("There was an error creating the user!", error);
-    });
-  };
+  // Use useEffect to trigger validation on initial render and on input changes
+  useEffect(() => {
+    if (isSubmitted) {
+      trigger('firstName');
+      trigger('lastName');
+      trigger('email');
+      trigger('password');
+      trigger('confirmPassword');
+      trigger('contactNumber');
+      trigger('userType');
+    }
+  }, [isSubmitted, trigger]);
 
   return (
     <>
@@ -55,7 +69,7 @@ function RegistrationForm({ toggleForm }) {
         message={successMessage}
       />
 
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
         {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
 
         <Form.Group controlId="formBasicFirstName">
@@ -63,9 +77,11 @@ function RegistrationForm({ toggleForm }) {
           <Form.Control
             type="text"
             placeholder="Enter First Name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            {...register('firstName')}
+            className={errors.firstName ? 'is-invalid' : ''}
+            onBlur={() => trigger('firstName')} // Trigger validation on blur
           />
+          <div className="invalid-feedback">{errors.firstName?.message}</div>
         </Form.Group>
 
         <Form.Group controlId="formBasicLastName">
@@ -73,9 +89,11 @@ function RegistrationForm({ toggleForm }) {
           <Form.Control
             type="text"
             placeholder="Enter Last Name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            {...register('lastName')}
+            className={errors.lastName ? 'is-invalid' : ''}
+            onBlur={() => trigger('lastName')} // Trigger validation on blur
           />
+          <div className="invalid-feedback">{errors.lastName?.message}</div>
         </Form.Group>
 
         <Form.Group controlId="formBasicEmail">
@@ -83,9 +101,11 @@ function RegistrationForm({ toggleForm }) {
           <Form.Control
             type="email"
             placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register('email')}
+            className={errors.email ? 'is-invalid' : ''}
+            onBlur={() => trigger('email')} // Trigger validation on blur
           />
+          <div className="invalid-feedback">{errors.email?.message}</div>
         </Form.Group>
 
         <Form.Group controlId="formBasicPassword">
@@ -93,9 +113,11 @@ function RegistrationForm({ toggleForm }) {
           <Form.Control
             type="password"
             placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...register('password')}
+            className={errors.password ? 'is-invalid' : ''}
+            onBlur={() => trigger('password')} // Trigger validation on blur
           />
+          <div className="invalid-feedback">{errors.password?.message}</div>
         </Form.Group>
 
         <Form.Group controlId="formBasicConfirmPassword">
@@ -103,9 +125,11 @@ function RegistrationForm({ toggleForm }) {
           <Form.Control
             type="password"
             placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            {...register('confirmPassword')}
+            className={errors.confirmPassword ? 'is-invalid' : ''}
+            onBlur={() => trigger('confirmPassword')} // Trigger validation on blur
           />
+          <div className="invalid-feedback">{errors.confirmPassword?.message}</div>
         </Form.Group>
 
         <Form.Group controlId="formBasicContactNumber">
@@ -113,20 +137,23 @@ function RegistrationForm({ toggleForm }) {
           <Form.Control
             type="text"
             placeholder="Enter Contact Number"
-            value={contactNumber}
-            onChange={(e) => setContactNumber(e.target.value)}
+            {...register('contactNumber')}
+            className={errors.contactNumber ? 'is-invalid' : ''}
+            onBlur={() => trigger('contactNumber')} // Trigger validation on blur
           />
+          <div className="invalid-feedback">{errors.contactNumber?.message}</div>
         </Form.Group>
 
         <Form.Group controlId="formBasicUserType" className="dropdown-with-icon">
           <Form.Label>User Type</Form.Label>
           <div className="dropdown-container">
-            <Form.Control as="select" value={userType} onChange={handleUserTypeChange}>
+            <Form.Control as="select" {...register('userType')} className={errors.userType ? 'is-invalid' : ''}>
               <option value="job_seeker">Job Seeker</option>
               <option value="recruiter">Recruiter</option>
             </Form.Control>
             <FontAwesomeIcon icon={faChevronDown} className="dropdown-icon" />
           </div>
+          <div className="invalid-feedback">{errors.userType?.message}</div>
         </Form.Group>
 
         <Button variant="primary" type="submit" className="mt-3">
