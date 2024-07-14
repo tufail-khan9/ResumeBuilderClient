@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Button } from 'react-bootstrap';
 
-function LoginForm({ toggleForm }) {
+function LoginForm({ toggleForm, toggleForgotPassword, showSignUpLink }) {
   return (
     <Form>
       <Form.Group controlId="formBasicEmail">
@@ -18,8 +18,14 @@ function LoginForm({ toggleForm }) {
         Login
       </Button>
 
-      <Button variant="link" onClick={toggleForm}>
-        Sign up
+      {showSignUpLink && (
+        <Button variant="link" onClick={toggleForm}>
+          Sign up
+        </Button>
+      )}
+
+      <Button variant="link" onClick={toggleForgotPassword}>
+        Forgot Password
       </Button>
     </Form>
   );
