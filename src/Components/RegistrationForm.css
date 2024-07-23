@@ -1,23 +1,22 @@
 .dropdown-container {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-  }
-  
-  .dropdown-container select {
-    width: 100%;
-    padding-right: 2rem; /* Space for the icon */
-    -webkit-appearance: none; /* Remove default arrow in Safari */
-    -moz-appearance: none; /* Remove default arrow in Firefox */
-    appearance: none; /* Remove default arrow in other browsers */
-  }
-  
-  .dropdown-icon {
-    position: absolute;
-    top: 50%;
-    right: 1rem; /* Adjust as needed */
-    transform: translateY(-50%);
-    pointer-events: none; /* Allows clicks to pass through to the select */
-    color: #495057; /* Match the color of the text */
-  }
-  
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.dropdown-container select {
+  width: 100%;
+  padding-right: 2rem; /* Space for the icon */
+  -webkit-appearance: none; /* Remove default arrow in Safari */
+  -moz-appearance: none; /* Remove default arrow in Firefox */
+  appearance: none; /* Remove default arrow in other browsers */
+}
+
+.dropdown-icon {
+  position: absolute;
+  top: 50%;
+  right: 1rem; /* Adjust as needed */
+  transform: translateY(-50%);
+  pointer-events: none; /* Allows clicks to pass through to the select */
+  color: #495057; /* Match the color of the text */
+}

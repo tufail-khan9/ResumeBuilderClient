@@ -2,17 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { Form, Button, Alert } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { Form, Button, Alert, Col, Row } from 'react-bootstrap';
 import axios from './AxiosConfig';
 import SuccessMessagePopup from './SuccessMessagePopup';
-import './RegistrationForm.css';
 
-// Validation schema
 const validationSchema = Yup.object().shape({
-  firstName: Yup.string().required('First Name is required'),
-  lastName: Yup.string().required('Last Name is required'),
+  UserName: Yup.string().required('UserName is required'),
   email: Yup.string().required('Email is required').email('Email is invalid'),
   password: Yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
   confirmPassword: Yup.string()
@@ -25,7 +20,7 @@ const validationSchema = Yup.object().shape({
 function RegistrationForm({ toggleForm }) {
   const { register, handleSubmit, formState: { errors, isSubmitted }, trigger } = useForm({
     resolver: yupResolver(validationSchema),
-    mode: 'onBlur', // Validate fields on blur
+    mode: 'onBlur',
   });
 
   const [successMessage, setSuccessMessage] = useState('');
@@ -48,11 +43,9 @@ function RegistrationForm({ toggleForm }) {
       });
   };
 
-  // Use useEffect to trigger validation on initial render and on input changes
   useEffect(() => {
     if (isSubmitted) {
-      trigger('firstName');
-      trigger('lastName');
+      trigger('UserName');
       trigger('email');
       trigger('password');
       trigger('confirmPassword');
@@ -62,105 +55,99 @@ function RegistrationForm({ toggleForm }) {
   }, [isSubmitted, trigger]);
 
   return (
-    <>
+    <div className="container mt-5 mb-4 d-flex justify-content-center align-items-center">
       <SuccessMessagePopup
         show={showPopup}
         onClose={() => setShowPopup(false)}
         message={successMessage}
       />
 
-      <Form onSubmit={handleSubmit(onSubmit)}>
+      <Form onSubmit={handleSubmit(onSubmit)} className="w-75">
         {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
 
-        <Form.Group controlId="formBasicFirstName">
-          <Form.Label>First Name</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter First Name"
-            {...register('firstName')}
-            className={errors.firstName ? 'is-invalid' : ''}
-            onBlur={() => trigger('firstName')} // Trigger validation on blur
-          />
-          <div className="invalid-feedback">{errors.firstName?.message}</div>
-        </Form.Group>
+        <Row className="justify-content-center">
+          <Col md={10}>
+            <Form.Group controlId="formBasicUserName">
+              <Form.Label>User Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter User Name"
+                {...register('UserName')}
+                isInvalid={!!errors.UserName}
+                onBlur={() => trigger('UserName')}
+              />
+              <Form.Control.Feedback type="invalid">{errors.UserName?.message}</Form.Control.Feedback>
+            </Form.Group>
 
-        <Form.Group controlId="formBasicLastName">
-          <Form.Label>Last Name</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter Last Name"
-            {...register('lastName')}
-            className={errors.lastName ? 'is-invalid' : ''}
-            onBlur={() => trigger('lastName')} // Trigger validation on blur
-          />
-          <div className="invalid-feedback">{errors.lastName?.message}</div>
-        </Form.Group>
+            <Form.Group controlId="formBasicEmail">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter email"
+                {...register('email')}
+                isInvalid={!!errors.email}
+                onBlur={() => trigger('email')}
+              />
+              <Form.Control.Feedback type="invalid">{errors.email?.message}</Form.Control.Feedback>
+            </Form.Group>
 
-        <Form.Group controlId="formBasicEmail">
-          <Form.Label>Email address</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter email"
-            {...register('email')}
-            className={errors.email ? 'is-invalid' : ''}
-            onBlur={() => trigger('email')} // Trigger validation on blur
-          />
-          <div className="invalid-feedback">{errors.email?.message}</div>
-        </Form.Group>
+            <Form.Group controlId="formBasicPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                {...register('password')}
+                isInvalid={!!errors.password}
+                onBlur={() => trigger('password')}
+              />
+              <Form.Control.Feedback type="invalid">{errors.password?.message}</Form.Control.Feedback>
+            </Form.Group>
 
-        <Form.Group controlId="formBasicPassword">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Password"
-            {...register('password')}
-            className={errors.password ? 'is-invalid' : ''}
-            onBlur={() => trigger('password')} // Trigger validation on blur
-          />
-          <div className="invalid-feedback">{errors.password?.message}</div>
-        </Form.Group>
+            <Form.Group controlId="formBasicConfirmPassword">
+              <Form.Label>Confirm Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Confirm Password"
+                {...register('confirmPassword')}
+                isInvalid={!!errors.confirmPassword}
+                onBlur={() => trigger('confirmPassword')}
+              />
+              <Form.Control.Feedback type="invalid">{errors.confirmPassword?.message}</Form.Control.Feedback>
+            </Form.Group>
 
-        <Form.Group controlId="formBasicConfirmPassword">
-          <Form.Label>Confirm Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Confirm Password"
-            {...register('confirmPassword')}
-            className={errors.confirmPassword ? 'is-invalid' : ''}
-            onBlur={() => trigger('confirmPassword')} // Trigger validation on blur
-          />
-          <div className="invalid-feedback">{errors.confirmPassword?.message}</div>
-        </Form.Group>
+            <Form.Group controlId="formBasicContactNumber">
+              <Form.Label>Contact Number</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Contact Number"
+                {...register('contactNumber')}
+                isInvalid={!!errors.contactNumber}
+                onBlur={() => trigger('contactNumber')}
+              />
+              <Form.Control.Feedback type="invalid">{errors.contactNumber?.message}</Form.Control.Feedback>
+            </Form.Group>
 
-        <Form.Group controlId="formBasicContactNumber">
-          <Form.Label>Contact Number</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter Contact Number"
-            {...register('contactNumber')}
-            className={errors.contactNumber ? 'is-invalid' : ''}
-            onBlur={() => trigger('contactNumber')} // Trigger validation on blur
-          />
-          <div className="invalid-feedback">{errors.contactNumber?.message}</div>
-        </Form.Group>
+            <Form.Group controlId="formBasicUserType">
+              <Form.Label>User Type</Form.Label>
+              <Form.Control as="select" {...register('userType')} isInvalid={!!errors.userType}>
+                <option value="">Select User Type</option>
+                <option value="job_seeker">Job Seeker</option>
+                <option value="recruiter">Recruiter</option>
+              </Form.Control>
+              <Form.Control.Feedback type="invalid">{errors.userType?.message}</Form.Control.Feedback>
+            </Form.Group>
 
-        <Form.Group controlId="formBasicUserType" className="dropdown-with-icon">
-          <Form.Label>User Type</Form.Label>
-          <div className="dropdown-container">
-            <Form.Control as="select" {...register('userType')} className={errors.userType ? 'is-invalid' : ''}>
-              <option value="job_seeker">Job Seeker</option>
-              <option value="recruiter">Recruiter</option>
-            </Form.Control>
-            <FontAwesomeIcon icon={faChevronDown} className="dropdown-icon" />
-          </div>
-          <div className="invalid-feedback">{errors.userType?.message}</div>
-        </Form.Group>
+            <Button variant="primary" type="submit" className="mt-3">
+              Register
+            </Button>
 
-        <Button variant="primary" type="submit" className="mt-3">
-          Register
-        </Button>
+            <Button variant="link" onClick={() => toggleForm('login')}>
+              Back to Login
+            </Button>
+          </Col>
+        </Row>
       </Form>
-    </>
+    </div>
   );
 }
 

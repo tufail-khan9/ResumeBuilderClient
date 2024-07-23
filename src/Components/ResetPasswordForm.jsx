@@ -12,18 +12,27 @@ function ResetPasswordForm({ toggleForm }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+  
+    // Check if passwords match
+    if (newPassword !== confirmPassword) {
+      setErrorMessage('Passwords do not match');
+      return;
+    }
+  
     axios.post('User/ResetPassword', { email, otp, newPassword, confirmPassword })
       .then(response => {
         setSuccessMessage(response.data.message);
         setTimeout(() => {
           setSuccessMessage('');
-          toggleForm('login'); // Redirect to login form
+          setErrorMessage('');
+          toggleForm('login'); // Switch to login form
         }, 3000);
       })
       .catch(error => {
-        setErrorMessage(error.response.data.message);
+        setErrorMessage(error.response?.data?.message || 'An error occurred');
       });
   };
+  
 
   return (
     <Form onSubmit={handleSubmit}>

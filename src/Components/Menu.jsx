@@ -1,56 +1,63 @@
 import React, { useState } from 'react';
 import { Navbar, Nav, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faSignInAlt, faAddressBook } from "@fortawesome/free-solid-svg-icons";
+import { Link } from 'react-router-dom';
 import LoginForm from './LoginForm';
 import RegistrationForm from './RegistrationForm';
 import ForgotPasswordForm from './ForgotPasswordForm';
 import ResetPasswordForm from './ResetPasswordForm';
-import DummyHomePage from './HomePage'; // Import DummyHomePage if needed
-import './Menu.css'; // Adjust path based on actual location of Menu.css
+import './Menu.css';
 
-const Menu = ({ setView }) => {
+const Menu = ({ isLoggedIn, onLogout, onLogin }) => {
   const [showModal, setShowModal] = useState(false);
   const [formType, setFormType] = useState('login');
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
 
   const handleShow = () => setShowModal(true);
   const handleClose = () => {
     setShowModal(false);
-    setFormType('login'); // Reset form type on modal close
+    setFormType('login'); 
   };
+  
 
   const toggleForm = (type) => {
     setFormType(type);
-    handleShow(); // Ensure modal opens when form type changes
-  };
-
-  const handleLogin = (username) => {
-    setUsername(username);
-    setLoggedIn(true);
-    setFormType('home'); // Switch to 'home' after successful login
-    setShowModal(false); // Close the modal after successful login
+    handleShow();
   };
 
   return (
     <>
       <Navbar expand="lg" className="navbar">
+        <Navbar.Brand href="/" className="navbar-brand">Resume Builder App</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
-            {!loggedIn ? (
-              <>
-                <Nav.Link href="#" onClick={() => toggleForm('login')}>
-                  <FontAwesomeIcon icon={faHome} /> Login
-                </Nav.Link>
-                <Nav.Link href="#" onClick={() => toggleForm('forgotPassword')}>
-                  <FontAwesomeIcon icon={faSearch} /> Forgot Password
-                </Nav.Link>
-              </>
-            ) : (
-              <Nav.Link href="#" onClick={() => setFormType('home')}>
-                <FontAwesomeIcon icon={faHome} /> Home
+            {!isLoggedIn && (
+              <Nav.Link href="#" onClick={() => toggleForm('login')}>
+                <FontAwesomeIcon icon={faSignInAlt} /> Login
+              </Nav.Link>
+            )}
+            <Nav.Link as={Link} to="/contactInfo">
+              <FontAwesomeIcon icon={faAddressBook} /> Contact Info
+            </Nav.Link>
+            <Nav.Link as={Link} to="/educationInfo">
+              <FontAwesomeIcon icon={faAddressBook} /> Education Info
+            </Nav.Link>
+            <Nav.Link as={Link} to="/homePage">
+              <FontAwesomeIcon icon={faAddressBook} /> HomePage
+            </Nav.Link>
+            <Nav.Link as={Link} to="/skill">
+              <FontAwesomeIcon icon={faAddressBook} /> Skill
+            </Nav.Link>
+            <Nav.Link as={Link} to="/hobby">
+              <FontAwesomeIcon icon={faAddressBook} /> Hobby
+            </Nav.Link>
+            <Nav.Link as={Link} to="/workExperience">
+              <FontAwesomeIcon icon={faAddressBook} /> Work Experience
+            </Nav.Link>
+            {isLoggedIn && (
+              <Nav.Link href="#" onClick={onLogout}>
+                <FontAwesomeIcon icon={faSignInAlt} /> Logout
               </Nav.Link>
             )}
           </Nav>
@@ -58,40 +65,20 @@ const Menu = ({ setView }) => {
       </Navbar>
 
       <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {formType === 'login' && 'Login'}
-            {formType === 'register' && 'Register'}
-            {formType === 'forgotPassword' && 'Forgot Password'}
-            {formType === 'resetPassword' && 'Reset Password'}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {formType === 'login' && (
-            <LoginForm 
-              toggleForm={() => toggleForm('register')} 
-              toggleForgotPassword={() => toggleForm('forgotPassword')} 
-              onLogin={handleLogin}
-              showSignUpLink
-            />
-          )}
-          {formType === 'register' && (
-            <>
-              <RegistrationForm toggleForm={toggleForm} />
-              <div className="text-center mt-3">
-                <p>Already have an account?</p>
-                <button className="btn btn-link" onClick={() => toggleForm('login')}>
-                  Back to Login
-                </button>
-              </div>
-            </>
-          )}
-          {formType === 'forgotPassword' && <ForgotPasswordForm toggleForm={() => toggleForm('login')} />}
-          {formType === 'resetPassword' && <ResetPasswordForm toggleForm={() => toggleForm('login')} />}
-        </Modal.Body>
-      </Modal>
+  {formType === 'login' && (
+    <LoginForm
+      handleClose={handleClose}
+      toggleForm={toggleForm}
+      toggleForgotPassword={() => toggleForm('forgotPassword')}
+      showSignUpLink={true}
+      onLogin={onLogin}
+    />
+  )}
+  {formType === 'register' && <RegistrationForm toggleForm={toggleForm} />}
+  {formType === 'forgotPassword' && <ForgotPasswordForm toggleForm={toggleForm} />}
+  {formType === 'resetPassword' && <ResetPasswordForm toggleForm={toggleForm} />}
+</Modal>
 
-      {loggedIn && formType === 'home' && <DummyHomePage username={username} />}
     </>
   );
 };

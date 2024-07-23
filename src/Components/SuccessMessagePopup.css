@@ -6,8 +6,9 @@
   width: 300px;
   margin: auto;
   border-radius: 10px;
-  background-color: #f8f9fa;
+  background-color: #8ac0f5;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px red;
 }
 
 .success-message {

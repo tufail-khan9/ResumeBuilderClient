@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Button, Alert } from 'react-bootstrap';
+import { Form, Button, Alert, Row, Col } from 'react-bootstrap';
 import axios from './AxiosConfig';
 import SuccessMessagePopup from './SuccessMessagePopup';
 
@@ -10,8 +10,8 @@ function ForgotPasswordForm({ toggleForm }) {
   const [showPopup, setShowPopup] = useState(false);
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission
-    axios.post('User/ForgotPassword', { email }) // Ensure correct payload
+    e.preventDefault();
+    axios.post('User/ForgotPassword', { email })
       .then(response => {
         setSuccessMessage("OTP sent successfully!");
         setShowPopup(true);
@@ -27,31 +27,36 @@ function ForgotPasswordForm({ toggleForm }) {
   };
 
   return (
-    <>
-      {showPopup && (
-        <SuccessMessagePopup
-          show={showPopup}
-          onClose={() => setShowPopup(false)}
-          message="OTP sent successfully"
-        />
-      )}
-      <Form onSubmit={handleSubmit}>
-        {successMessage && <Alert variant="success">{successMessage}</Alert>}
-        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-        <Form.Group controlId="formBasicEmail">
-          <Form.Label>Email address</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Form.Group>
-        <Button variant="primary" type="submit" className="mt-3">
-          Submit
-        </Button>
-      </Form>
-    </>
+    
+      
+        <Col  lg={9} className="mx-auto">
+          {showPopup && (
+            <SuccessMessagePopup
+              show={showPopup}
+              onClose={() => setShowPopup(false)}
+              message="OTP sent successfully"
+            />
+          )}
+          <Form onSubmit={handleSubmit} className="p-4 border rounded bg-light shadow">
+            {successMessage && <Alert variant="success">{successMessage}</Alert>}
+            {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+            <Form.Group controlId="formBasicEmail">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mb-3"
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit" className="w-100">
+              Submit
+            </Button>
+          </Form>
+        </Col>
+      
+    
   );
 }
 

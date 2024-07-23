@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
-import './SuccessMessagePopup.css'; // Import the CSS file
+import './SuccessMessagePopup.css'; 
 
 const SuccessMessagePopup = ({ show, onClose, message }) => {
   useEffect(() => {

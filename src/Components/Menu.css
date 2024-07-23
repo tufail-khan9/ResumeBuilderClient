@@ -1,6 +1,13 @@
 .navbar {
   background-color: #3FA0EF;
+  height: 80px;
   animation: slideIn 0.5s ease-in-out;
+}
+
+.navbar-brand {
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem; /* Adjust font size as needed */
 }
 
 .navbar-nav .nav-link {
