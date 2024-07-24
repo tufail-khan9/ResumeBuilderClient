@@ -8,6 +8,7 @@ import Skill from './ResumeComponents/Skill';
 import Hobby from './ResumeComponents/Hobby';
 import WorkExperience from './ResumeComponents/WorkExperience';
 import DummyPage from './Components/DummyPage';
+import CombinedForm from './ResumeComponents/ResumeForm';
 import './App.css';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
   return (
     <Router>
       <div className="App">
+      
         <Menu isLoggedIn={isLoggedIn} onLogout={handleLogout} onLogin={handleLogin} />
         <Routes>
           <Route path="/" element={<Navigate to={isLoggedIn ? "/dummypage" : "/"} />} />
@@ -35,6 +37,7 @@ function App() {
           <Route path="/workExperience" element={isLoggedIn ? <WorkExperience /> : <Navigate to="/" />} />
           <Route path="/dummypage" element={isLoggedIn ? <DummyPage /> : <Navigate to="/" />} />
         </Routes>
+        <CombinedForm />
       </div>
     </Router>
   );
