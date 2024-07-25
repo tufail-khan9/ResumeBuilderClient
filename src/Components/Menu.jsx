@@ -37,23 +37,9 @@ const Menu = ({ isLoggedIn, onLogout, onLogin }) => {
                 <FontAwesomeIcon icon={faSignInAlt} /> Login
               </Nav.Link>
             )}
-            <Nav.Link as={Link} to="/contactInfo">
-              <FontAwesomeIcon icon={faAddressBook} /> Contact Info
-            </Nav.Link>
-            <Nav.Link as={Link} to="/educationInfo">
-              <FontAwesomeIcon icon={faAddressBook} /> Education Info
-            </Nav.Link>
+            
             <Nav.Link as={Link} to="/homePage">
               <FontAwesomeIcon icon={faAddressBook} /> HomePage
-            </Nav.Link>
-            <Nav.Link as={Link} to="/skill">
-              <FontAwesomeIcon icon={faAddressBook} /> Skill
-            </Nav.Link>
-            <Nav.Link as={Link} to="/hobby">
-              <FontAwesomeIcon icon={faAddressBook} /> Hobby
-            </Nav.Link>
-            <Nav.Link as={Link} to="/workExperience">
-              <FontAwesomeIcon icon={faAddressBook} /> Work Experience
             </Nav.Link>
             {isLoggedIn && (
               <Nav.Link href="#" onClick={onLogout}>
