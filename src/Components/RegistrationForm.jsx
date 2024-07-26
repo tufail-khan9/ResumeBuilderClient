@@ -20,7 +20,7 @@ const validationSchema = Yup.object().shape({
   userType: Yup.string().required("User Type is required"),
 });
 
-function RegistrationForm({ toggleForm }) {
+function RegistrationForm({ toggleForm, setUser }) {
   const {
     register,
     handleSubmit,
@@ -46,6 +46,7 @@ function RegistrationForm({ toggleForm }) {
       .then((response) => {
         setSuccessMessage("User registered successfully!");
         setShowPopup(true);
+        setUser(response.data); // Update user state
         setTimeout(() => {
           setShowPopup(false);
           toggleForm("login");

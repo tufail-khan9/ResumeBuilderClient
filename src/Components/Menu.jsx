@@ -9,7 +9,7 @@ import ForgotPasswordForm from './ForgotPasswordForm';
 import ResetPasswordForm from './ResetPasswordForm';
 import './Menu.css';
 
-const Menu = ({ isLoggedIn, onLogout, onLogin, user }) => { // Add user as a prop
+const Menu = ({ isLoggedIn, onLogout, onLogin, user, setUser }) => {
   const [showModal, setShowModal] = useState(false);
   const [formType, setFormType] = useState('login');
 
@@ -29,9 +29,12 @@ const Menu = ({ isLoggedIn, onLogout, onLogin, user }) => { // Add user as a pro
       <Navbar expand="lg" className="navbar">
         <Navbar.Brand href="/" className="navbar-brand">Resume Builder App</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
+        <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
           <Nav className="ml-auto">
-            {isLoggedIn && user && ( // Check if user is logged in and user data is available
+            <Nav.Link as={Link} to="/homePage">
+              <FontAwesomeIcon icon={faAddressBook} /> HomePage
+            </Nav.Link>
+            {isLoggedIn && user && (
               <Nav.Item className="d-flex align-items-center">
                 <img src={user.imageUrl} alt="Profile" className="profile-image" />
                 <span className="ml-2">{user.UserName}</span>
@@ -42,9 +45,6 @@ const Menu = ({ isLoggedIn, onLogout, onLogin, user }) => { // Add user as a pro
                 <FontAwesomeIcon icon={faSignInAlt} /> Login
               </Nav.Link>
             )}
-            <Nav.Link as={Link} to="/homePage">
-              <FontAwesomeIcon icon={faAddressBook} /> HomePage
-            </Nav.Link>
             {isLoggedIn && (
               <Nav.Link href="#" onClick={onLogout}>
                 <FontAwesomeIcon icon={faSignInAlt} /> Logout
@@ -64,7 +64,7 @@ const Menu = ({ isLoggedIn, onLogout, onLogin, user }) => { // Add user as a pro
             onLogin={onLogin}
           />
         )}
-        {formType === 'register' && <RegistrationForm toggleForm={toggleForm} />}
+        {formType === 'register' && <RegistrationForm toggleForm={toggleForm} setUser={setUser} />}
         {formType === 'forgotPassword' && <ForgotPasswordForm toggleForm={toggleForm} />}
         {formType === 'resetPassword' && <ResetPasswordForm toggleForm={toggleForm} />}
       </Modal>

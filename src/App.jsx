@@ -10,26 +10,24 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
 
-  const handleLogin = (userData) => { // Modify this function
+  const handleLogin = (userData) => {
     setIsLoggedIn(true);
-    setUser(userData); // Add this line to set user data
+    setUser(userData);
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    setUser(null); // Add this line to clear user data
+    setUser(null);
   };
 
   return (
     <Router>
       <div className="App">
-      
-        <Menu isLoggedIn={isLoggedIn} onLogout={handleLogout} onLogin={handleLogin} user={user}  />
-       
-        <Routes>
-          <Route path="/" element={<Navigate to={isLoggedIn ? "/dummypage" : "/"} />} />
-          <Route path="/homePage" element={isLoggedIn ? <HomePage /> : <Navigate to="/" />} />
+        <Menu isLoggedIn={isLoggedIn} onLogout={handleLogout} onLogin={handleLogin} user={user} setUser={setUser} />
 
+        <Routes>
+          <Route path="/" element={<Navigate to={isLoggedIn ? "/homePage" : "/"} />} />
+          <Route path="/homePage" element={isLoggedIn ? <DummyPage /> : <Navigate to="/" />} />
           <Route path="/dummypage" element={isLoggedIn ? <DummyPage /> : <Navigate to="/" />} />
         </Routes>
         <CombinedForm />
