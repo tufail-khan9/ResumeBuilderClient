@@ -9,7 +9,7 @@ import ForgotPasswordForm from './ForgotPasswordForm';
 import ResetPasswordForm from './ResetPasswordForm';
 import './Menu.css';
 
-const Menu = ({ isLoggedIn, onLogout, onLogin }) => {
+const Menu = ({ isLoggedIn, onLogout, onLogin, user }) => { // Add user as a prop
   const [showModal, setShowModal] = useState(false);
   const [formType, setFormType] = useState('login');
 
@@ -18,7 +18,6 @@ const Menu = ({ isLoggedIn, onLogout, onLogin }) => {
     setShowModal(false);
     setFormType('login'); 
   };
-  
 
   const toggleForm = (type) => {
     setFormType(type);
@@ -32,12 +31,17 @@ const Menu = ({ isLoggedIn, onLogout, onLogin }) => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
+            {isLoggedIn && user && ( // Check if user is logged in and user data is available
+              <Nav.Item className="d-flex align-items-center">
+                <img src={user.imageUrl} alt="Profile" className="profile-image" />
+                <span className="ml-2">{user.UserName}</span>
+              </Nav.Item>
+            )}
             {!isLoggedIn && (
               <Nav.Link href="#" onClick={() => toggleForm('login')}>
                 <FontAwesomeIcon icon={faSignInAlt} /> Login
               </Nav.Link>
             )}
-            
             <Nav.Link as={Link} to="/homePage">
               <FontAwesomeIcon icon={faAddressBook} /> HomePage
             </Nav.Link>
@@ -51,20 +55,19 @@ const Menu = ({ isLoggedIn, onLogout, onLogin }) => {
       </Navbar>
 
       <Modal show={showModal} onHide={handleClose}>
-  {formType === 'login' && (
-    <LoginForm
-      handleClose={handleClose}
-      toggleForm={toggleForm}
-      toggleForgotPassword={() => toggleForm('forgotPassword')}
-      showSignUpLink={true}
-      onLogin={onLogin}
-    />
-  )}
-  {formType === 'register' && <RegistrationForm toggleForm={toggleForm} />}
-  {formType === 'forgotPassword' && <ForgotPasswordForm toggleForm={toggleForm} />}
-  {formType === 'resetPassword' && <ResetPasswordForm toggleForm={toggleForm} />}
-</Modal>
-
+        {formType === 'login' && (
+          <LoginForm
+            handleClose={handleClose}
+            toggleForm={toggleForm}
+            toggleForgotPassword={() => toggleForm('forgotPassword')}
+            showSignUpLink={true}
+            onLogin={onLogin}
+          />
+        )}
+        {formType === 'register' && <RegistrationForm toggleForm={toggleForm} />}
+        {formType === 'forgotPassword' && <ForgotPasswordForm toggleForm={toggleForm} />}
+        {formType === 'resetPassword' && <ResetPasswordForm toggleForm={toggleForm} />}
+      </Modal>
     </>
   );
 };

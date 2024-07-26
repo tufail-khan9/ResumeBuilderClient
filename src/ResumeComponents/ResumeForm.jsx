@@ -5,8 +5,10 @@ import { faPlus, faSave, faUser, faPhone, faEnvelope, faMapMarkerAlt } from '@fo
 import { faLinkedin, faGithub } from '@fortawesome/free-brands-svg-icons';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import axios from '../Components/AxiosConfig';
 
 const CombinedForm = () => {
+  const [userId, setUserId] = useState('1'); 
   const [personalInfo, setPersonalInfo] = useState({
     image: '',
     name: '',
@@ -59,158 +61,71 @@ const CombinedForm = () => {
   };
 
   const handleSave = () => {
-    const resumeData = {
-      personalInfo,
-      contactInfo,
-      experiences,
-      educations,
-      skills,
-      hobbies,
+    const formatDate = (date) => {
+        return new Date(date).toISOString();
     };
-    console.log(resumeData);
-    // You can make an API call here to save the data
-  };
 
-  const handleSaveAndCreatePDF = () => {
-    const doc = new jsPDF('p', 'pt', 'a4'); // Use 'pt' for better layout control
-  
-    // Title
-    doc.setFontSize(24);
-    doc.setFont("Arial", "bold");
-    doc.text('Curriculum Vitae', 40, 60);
-  
-    // Personal Info Header
-    doc.setFontSize(18);
-    doc.setFont("Arial", "bold");
-    doc.text('Personal Information', 40, 100);
-  
-    // Personal Info
-    doc.setFontSize(12);
-    doc.setFont("Arial", "normal");
-    doc.text(`Name: ${personalInfo.name}`, 40, 120);
-    doc.text(`Designation: ${personalInfo.designation}`, 40, 140);
-    
-    // About Me (multi-line text)
-    const aboutMeLines = doc.splitTextToSize(personalInfo.aboutMe, 250);
-    doc.text('About Me:', 40, 160);
-    doc.text(aboutMeLines, 40, 180);
-  
-    // Line Break
-    doc.setDrawColor(0, 0, 0);
-    doc.setLineWidth(0.5);
-    doc.line(40, 220, 570, 220); // Draw line separator
-  
-    // Contact Info
-    doc.setFontSize(18);
-    doc.setFont("Arial", "bold");
-    doc.text('Contact Information', 40, 240);
-    doc.setFontSize(12);
-    doc.setFont("Arial", "normal");
-    doc.text(`Mobile: ${contactInfo.mobile}`, 40, 260);
-    doc.text(`Email: ${contactInfo.email}`, 40, 280);
-    doc.text(`Location: ${contactInfo.location}`, 40, 300);
-    doc.text(`LinkedIn: ${contactInfo.linkedin}`, 40, 320);
-    doc.text(`GitHub: ${contactInfo.github}`, 40, 340);
-    doc.text(`Website: ${contactInfo.website}`, 40, 360);
-  
-    // Line Break
-    doc.line(40, 380, 570, 380); // Draw line separator
-  
-    // Education and Work Experience Header
-    doc.setFontSize(18);
-    doc.setFont("Arial", "bold");
-    doc.text('Education & Work Experience', 40, 400);
-  
-    // Work Experience
-    doc.setFontSize(16);
-    doc.setFont("Arial", "bold");
-    doc.text('Work Experience', 40, 440);
-    doc.setFontSize(12);
-    doc.setFont("Arial", "normal");
-    doc.autoTable({
-      startY: 460,
-      head: [['Company', 'Role', 'Start Date', 'End Date']],
-      body: experiences.map(exp => [exp.company, exp.role, exp.startDate, exp.endDate]),
-      theme: 'striped',
-      styles: {
-        fontSize: 10,
-        cellPadding: 5,
-        overflow: 'linebreak',
-      },
-      margin: { top: 10 },
-    });
-  
-    // Education
-    doc.setFontSize(16);
-    doc.setFont("Arial", "bold");
-    doc.text('Education', 40, doc.autoTable.previous.finalY + 20);
-    doc.setFontSize(12);
-    doc.setFont("Arial", "normal");
-    doc.autoTable({
-      startY: doc.autoTable.previous.finalY + 40,
-      head: [['Institution', 'Degree', 'Start Date', 'End Date']],
-      body: educations.map(edu => [edu.institution, edu.degree, edu.startDate, edu.endDate]),
-      theme: 'striped',
-      styles: {
-        fontSize: 10,
-        cellPadding: 5,
-        overflow: 'linebreak',
-      },
-      margin: { top: 10 },
-    });
-  
-    // Skills and Hobbies Header
-    doc.setFontSize(18);
-    doc.setFont("Arial", "bold");
-    doc.text('Skills & Hobbies', 40, doc.autoTable.previous.finalY + 20);
-  
-    // Skills
-    doc.setFontSize(16);
-    doc.setFont("Arial", "bold");
-    doc.text('Skills', 40, doc.autoTable.previous.finalY + 40);
-    doc.setFontSize(12);
-    doc.setFont("Arial", "normal");
-    doc.autoTable({
-      startY: doc.autoTable.previous.finalY + 60,
-      head: [['#', 'Skill']],
-      body: skills.map((skill, index) => [index + 1, skill]),
-      theme: 'striped',
-      styles: {
-        fontSize: 10,
-        cellPadding: 5,
-        overflow: 'linebreak',
-      },
-      margin: { top: 10 },
-    });
-  
-    // Hobbies
-    doc.setFontSize(16);
-    doc.setFont("Arial", "bold");
-    doc.text('Hobbies', 40, doc.autoTable.previous.finalY + 20);
-    doc.setFontSize(12);
-    doc.setFont("Arial", "normal");
-    doc.autoTable({
-      startY: doc.autoTable.previous.finalY + 40,
-      head: [['#', 'Hobby']],
-      body: hobbies.map((hobby, index) => [index + 1, hobby]),
-      theme: 'striped',
-      styles: {
-        fontSize: 10,
-        cellPadding: 5,
-        overflow: 'linebreak',
-      },
-      margin: { top: 10 },
-    });
-  
-    // Save the PDF
-    doc.save('resume.pdf');
-  };
-  
+    const resumeData = {
+        personalInfo: {
+            image: personalInfo.image || "",
+            name: personalInfo.name,
+            designation: personalInfo.designation,
+            aboutMe: personalInfo.aboutMe,
+            userId: userId,
+        },
+        contactInfo: {
+            mobile: contactInfo.mobile,
+            email: contactInfo.email,
+            location: contactInfo.location,
+            linkedIn: contactInfo.linkedin,
+            gitHub: contactInfo.github,
+            website: contactInfo.website,
+            userId: userId,
+        },
+        experiences: experiences.map(exp => ({
+            company: exp.company,
+            role: exp.role,
+            startDate: formatDate(exp.startDate),
+            endDate: formatDate(exp.endDate),
+            userId: userId,
+        })),
+        educations: educations.map(edu => ({
+            institution: edu.institution,
+            degree: edu.degree,
+            startDate: formatDate(edu.startDate),
+            endDate: formatDate(edu.endDate),
+            userId: userId,
+        })),
+        skills: skills.map(skill => ({
+            name: skill.skill || "",
+            userId: userId,
+        })),
+        hobbies: hobbies.map(hobby => ({
+            name: hobby.hobby || "",
+            userId: userId,
+        })),
+    };
+
+    // Log the data to ensure it's formatted correctly
+    console.log("Sending data to API:", resumeData);
+
+    axios.post('PersonalInfo/SavePersonalInfo', resumeData)
+        .then(response => {
+            setSuccessMessage("Data saved successfully!");
+        })
+        .catch(error => {
+            setErrorMessage("There was an error saving the data!");
+            console.error("There was an error saving the data!", error);
+        });
+};
+
+
+ 
 
   return (
     <div className="container mt-5">
       <h2 className="text-primary mb-4">Personal Information</h2>
-      <Form>
+      <Form onSubmit={handleSave}>
         <Row className="mb-3">
           <Col md={3} className="d-flex flex-column align-items-center">
             <Form.Group>
@@ -558,9 +473,9 @@ const CombinedForm = () => {
         <Button onClick={handleSave} className="me-2">
           <FontAwesomeIcon icon={faSave} /> Save
         </Button>
-        <Button onClick={handleSaveAndCreatePDF}>
+        {/* <Button onClick={handleSaveAndCreatePDF}>
           <FontAwesomeIcon icon={faSave} /> Save & Create PDF
-        </Button>
+        </Button> */}
       </div>
     </div>
   );

@@ -8,20 +8,24 @@ import './App.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
 
-  const handleLogin = () => {
-    setIsLoggedIn(true); // Update state to logged in
+  const handleLogin = (userData) => { // Modify this function
+    setIsLoggedIn(true);
+    setUser(userData); // Add this line to set user data
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false); // Update state to logged out
+    setIsLoggedIn(false);
+    setUser(null); // Add this line to clear user data
   };
 
   return (
     <Router>
       <div className="App">
       
-        <Menu isLoggedIn={isLoggedIn} onLogout={handleLogout} onLogin={handleLogin} />
+        <Menu isLoggedIn={isLoggedIn} onLogout={handleLogout} onLogin={handleLogin} user={user}  />
+       
         <Routes>
           <Route path="/" element={<Navigate to={isLoggedIn ? "/dummypage" : "/"} />} />
           <Route path="/homePage" element={isLoggedIn ? <HomePage /> : <Navigate to="/" />} />

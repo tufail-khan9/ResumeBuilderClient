@@ -1,43 +1,57 @@
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
-import { Form, Button, Alert, Col, Row } from 'react-bootstrap';
-import axios from './AxiosConfig';
-import SuccessMessagePopup from './SuccessMessagePopup';
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+import { Form, Button, Alert, Col, Row } from "react-bootstrap";
+import axios from "./AxiosConfig";
+import SuccessMessagePopup from "./SuccessMessagePopup";
 
 const validationSchema = Yup.object().shape({
-  UserName: Yup.string().required('UserName is required'),
-  email: Yup.string().required('Email is required').email('Email is invalid'),
-  password: Yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
+  imageUrl: Yup.mixed().required("Image is required"),
+  UserName: Yup.string().required("UserName is required"),
+  email: Yup.string().required("Email is required").email("Email is invalid"),
+  password: Yup.string()
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters"),
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password'), null], 'Passwords must match')
-    .required('Confirm Password is required'),
-  contactNumber: Yup.string().required('Contact Number is required'),
-  userType: Yup.string().required('User Type is required'),
+    .oneOf([Yup.ref("password"), null], "Passwords must match")
+    .required("Confirm Password is required"),
+  contactNumber: Yup.string().required("Contact Number is required"),
+  userType: Yup.string().required("User Type is required"),
 });
 
 function RegistrationForm({ toggleForm }) {
-  const { register, handleSubmit, formState: { errors, isSubmitted }, trigger } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitted },
+    trigger,
+  } = useForm({
     resolver: yupResolver(validationSchema),
-    mode: 'onBlur',
+    mode: "onBlur",
   });
 
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
 
   const onSubmit = (data) => {
-    axios.post('User/RegisterUser', data)
-      .then(response => {
+    const formData = new FormData();
+    for (const key in data) {
+      formData.append(key, data[key]);
+    }
+
+    axios
+      .post("User/RegisterUser", formData)
+      .then((response) => {
         setSuccessMessage("User registered successfully!");
         setShowPopup(true);
         setTimeout(() => {
           setShowPopup(false);
-          toggleForm('login');
+          toggleForm("login");
         }, 2000);
       })
-      .catch(error => {
+      .catch((error) => {
         setErrorMessage("There was an error creating the user!");
         console.error("There was an error creating the user!", error);
       });
@@ -45,12 +59,12 @@ function RegistrationForm({ toggleForm }) {
 
   useEffect(() => {
     if (isSubmitted) {
-      trigger('UserName');
-      trigger('email');
-      trigger('password');
-      trigger('confirmPassword');
-      trigger('contactNumber');
-      trigger('userType');
+      trigger("UserName");
+      trigger("email");
+      trigger("password");
+      trigger("confirmPassword");
+      trigger("contactNumber");
+      trigger("userType");
     }
   }, [isSubmitted, trigger]);
 
@@ -72,11 +86,13 @@ function RegistrationForm({ toggleForm }) {
               <Form.Control
                 type="text"
                 placeholder="Enter User Name"
-                {...register('UserName')}
+                {...register("UserName")}
                 isInvalid={!!errors.UserName}
-                onBlur={() => trigger('UserName')}
+                onBlur={() => trigger("UserName")}
               />
-              <Form.Control.Feedback type="invalid">{errors.UserName?.message}</Form.Control.Feedback>
+              <Form.Control.Feedback type="invalid">
+                {errors.UserName?.message}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group controlId="formBasicEmail">
@@ -84,11 +100,13 @@ function RegistrationForm({ toggleForm }) {
               <Form.Control
                 type="email"
                 placeholder="Enter email"
-                {...register('email')}
+                {...register("email")}
                 isInvalid={!!errors.email}
-                onBlur={() => trigger('email')}
+                onBlur={() => trigger("email")}
               />
-              <Form.Control.Feedback type="invalid">{errors.email?.message}</Form.Control.Feedback>
+              <Form.Control.Feedback type="invalid">
+                {errors.email?.message}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group controlId="formBasicPassword">
@@ -96,11 +114,13 @@ function RegistrationForm({ toggleForm }) {
               <Form.Control
                 type="password"
                 placeholder="Password"
-                {...register('password')}
+                {...register("password")}
                 isInvalid={!!errors.password}
-                onBlur={() => trigger('password')}
+                onBlur={() => trigger("password")}
               />
-              <Form.Control.Feedback type="invalid">{errors.password?.message}</Form.Control.Feedback>
+              <Form.Control.Feedback type="invalid">
+                {errors.password?.message}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group controlId="formBasicConfirmPassword">
@@ -108,11 +128,13 @@ function RegistrationForm({ toggleForm }) {
               <Form.Control
                 type="password"
                 placeholder="Confirm Password"
-                {...register('confirmPassword')}
+                {...register("confirmPassword")}
                 isInvalid={!!errors.confirmPassword}
-                onBlur={() => trigger('confirmPassword')}
+                onBlur={() => trigger("confirmPassword")}
               />
-              <Form.Control.Feedback type="invalid">{errors.confirmPassword?.message}</Form.Control.Feedback>
+              <Form.Control.Feedback type="invalid">
+                {errors.confirmPassword?.message}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group controlId="formBasicContactNumber">
@@ -120,28 +142,49 @@ function RegistrationForm({ toggleForm }) {
               <Form.Control
                 type="text"
                 placeholder="Enter Contact Number"
-                {...register('contactNumber')}
+                {...register("contactNumber")}
                 isInvalid={!!errors.contactNumber}
-                onBlur={() => trigger('contactNumber')}
+                onBlur={() => trigger("contactNumber")}
               />
-              <Form.Control.Feedback type="invalid">{errors.contactNumber?.message}</Form.Control.Feedback>
+              <Form.Control.Feedback type="invalid">
+                {errors.contactNumber?.message}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group controlId="formBasicUserType">
               <Form.Label>User Type</Form.Label>
-              <Form.Control as="select" {...register('userType')} isInvalid={!!errors.userType}>
+              <Form.Control
+                as="select"
+                {...register("userType")}
+                isInvalid={!!errors.userType}
+              >
                 <option value="">Select User Type</option>
                 <option value="job_seeker">Job Seeker</option>
                 <option value="recruiter">Recruiter</option>
               </Form.Control>
-              <Form.Control.Feedback type="invalid">{errors.userType?.message}</Form.Control.Feedback>
+              <Form.Control.Feedback type="invalid">
+                {errors.userType?.message}
+              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group controlId="formBasicImage">
+              <Form.Label>Profile Image</Form.Label>
+              <Form.Control
+                type="file"
+                {...register("imageUrl")}
+                isInvalid={!!errors.imageUrl}
+                onBlur={() => trigger("imageUrl")}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.imageUrl?.message}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Button variant="primary" type="submit" className="mt-3">
               Register
             </Button>
 
-            <Button variant="link" onClick={() => toggleForm('login')}>
+            <Button variant="link" onClick={() => toggleForm("login")}>
               Back to Login
             </Button>
           </Col>
