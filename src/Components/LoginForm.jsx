@@ -32,7 +32,7 @@ function LoginForm({ toggleForgotPassword, showSignUpLink, onLogin, toggleForm, 
         }
       });
       console.log('Login response:', response.data);
-      onLogin(); // Notify the parent component of a successful login
+      onLogin(response.data); // Pass user data to onLogin
       handleClose(); // Close the modal after login
       reset(); // Reset form fields
     } catch (error) {
@@ -51,7 +51,7 @@ function LoginForm({ toggleForgotPassword, showSignUpLink, onLogin, toggleForm, 
   return (
     <Form onSubmit={handleSubmit(handleLogin)} className="p-4 border rounded">
       {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-
+   
       <Form.Group controlId="formBasicEmail">
         <Form.Label>Email address</Form.Label>
         <Form.Control

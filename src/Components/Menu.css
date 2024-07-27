@@ -36,7 +36,7 @@
 
 .ml-auto {
   margin-left: auto !important; /* Ensure this class pushes items to the right */
-  margin-right: 20px; 
+  margin-right: 60px; 
 }
 
 @media (max-width: 767px) {
@@ -57,3 +57,22 @@
 .navbar-nav .nav-link:hover {
   background-color: transparent; /* Or a color of your choice */
 }
+/* Menu.css */
+
+/* Menu.css */
+
+.navbar .profile-image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.navbar .profile-icon {
+  font-size: 1.5rem;
+}
+
+.navbar .ml-2 {
+  margin-left: 50px !important;
+}
+
+

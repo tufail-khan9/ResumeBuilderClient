@@ -23,7 +23,7 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <Menu isLoggedIn={isLoggedIn} onLogout={handleLogout} onLogin={handleLogin} user={user} setUser={setUser} />
+      <Menu isLoggedIn={isLoggedIn} onLogout={handleLogout} onLogin={handleLogin} user={user} setUser={setUser} />
 
         <Routes>
           <Route path="/" element={<Navigate to={isLoggedIn ? "/homePage" : "/"} />} />

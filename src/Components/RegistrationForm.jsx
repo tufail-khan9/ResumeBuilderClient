@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { Form, Button, Alert, Col, Row } from "react-bootstrap";
-import axios from "./AxiosConfig";
+import axios from "axios";
 import SuccessMessagePopup from "./SuccessMessagePopup";
 
+// Validation schema
 const validationSchema = Yup.object().shape({
-  imageUrl: Yup.mixed().required("Image is required"),
   UserName: Yup.string().required("UserName is required"),
   email: Yup.string().required("Email is required").email("Email is invalid"),
   password: Yup.string()
@@ -18,6 +18,7 @@ const validationSchema = Yup.object().shape({
     .required("Confirm Password is required"),
   contactNumber: Yup.string().required("Contact Number is required"),
   userType: Yup.string().required("User Type is required"),
+  imageUrl: Yup.mixed()
 });
 
 function RegistrationForm({ toggleForm, setUser }) {
@@ -25,10 +26,10 @@ function RegistrationForm({ toggleForm, setUser }) {
     register,
     handleSubmit,
     formState: { errors, isSubmitted },
-    trigger,
+    trigger
   } = useForm({
     resolver: yupResolver(validationSchema),
-    mode: "onBlur",
+    mode: "onBlur"
   });
 
   const [successMessage, setSuccessMessage] = useState("");
@@ -37,37 +38,38 @@ function RegistrationForm({ toggleForm, setUser }) {
 
   const onSubmit = (data) => {
     const formData = new FormData();
+
+    // Append non-file fields
     for (const key in data) {
-      formData.append(key, data[key]);
+      if (key === "imageUrl") {
+        // Handle file input
+        if (data[key][0]) {
+          formData.append(key, data[key][0]); // Append the file
+        }
+      } else {
+        formData.append(key, data[key]);
+      }
     }
 
-    axios
-      .post("User/RegisterUser", formData)
-      .then((response) => {
-        setSuccessMessage("User registered successfully!");
-        setShowPopup(true);
-        setUser(response.data); // Update user state
-        setTimeout(() => {
-          setShowPopup(false);
-          toggleForm("login");
-        }, 2000);
-      })
-      .catch((error) => {
-        setErrorMessage("There was an error creating the user!");
-        console.error("There was an error creating the user!", error);
-      });
+    axios.post("http://localhost:5054/api/User/RegisterUser", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    .then((response) => {
+      setSuccessMessage("User registered successfully!");
+      setShowPopup(true);
+      setUser(response.data); // Ensure response.data contains user details
+      setTimeout(() => {
+        setShowPopup(false);
+        toggleForm("login");
+      }, 2000);
+    })
+    .catch((error) => {
+      console.error("There was an error creating the user!", error.response?.data || error.message);
+      setErrorMessage("There was an error creating the user!");
+    });
   };
-
-  useEffect(() => {
-    if (isSubmitted) {
-      trigger("UserName");
-      trigger("email");
-      trigger("password");
-      trigger("confirmPassword");
-      trigger("contactNumber");
-      trigger("userType");
-    }
-  }, [isSubmitted, trigger]);
 
   return (
     <div className="container mt-5 mb-4 d-flex justify-content-center align-items-center">
@@ -76,10 +78,8 @@ function RegistrationForm({ toggleForm, setUser }) {
         onClose={() => setShowPopup(false)}
         message={successMessage}
       />
-
       <Form onSubmit={handleSubmit(onSubmit)} className="w-75">
         {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-
         <Row className="justify-content-center">
           <Col md={10}>
             <Form.Group controlId="formBasicUserName">
