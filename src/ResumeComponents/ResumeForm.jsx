@@ -7,7 +7,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import axios from '../Components/AxiosConfig';
 
-const CombinedForm = () => {
+const ResumeForm = () => {
   const [userId, setUserId] = useState('1'); 
   const [personalInfo, setPersonalInfo] = useState({
     image: '',
@@ -481,4 +481,4 @@ const CombinedForm = () => {
   );
 };
 
-export default CombinedForm;
+export default ResumeForm;

@@ -1,4 +1,5 @@
 .navbar {
+  /* background-color: #3FA0EF; */
   background-color: #3FA0EF;
   height: 80px;
   animation: slideIn 0.5s ease-in-out;
@@ -8,6 +9,7 @@
   color: white;
   font-weight: bold;
   font-size: 1.5rem; /* Adjust font size as needed */
+  
 }
 
 .navbar-nav {
@@ -21,17 +23,21 @@
   transition: transform 0.3s ease-in-out;
   background-color: transparent; /* Remove any specific background color */
   margin-left: 15px; /* Add space between nav items */
+
 }
 
 .nav-link:hover {
   transform: translateY(-2px);
+  
 }
 
 .profile-image {
-  width: 30px;
-  height: 30px;
+  width: 40px; /* Adjust as needed */
+  height: 40px; /* Adjust as needed */
   border-radius: 50%;
-  margin-left: 15px; /* Add space between image and nav items */
+  object-fit: cover; /* Ensures the image covers the container */
+  margin-right: 5px; /* Space between the image and the username */
+  vertical-align: middle;
 }
 
 .ml-auto {
@@ -74,5 +80,33 @@
 .navbar .ml-2 {
   margin-left: 50px !important;
 }
+
+/* below new */
+/* General Navbar Styling */
+
+/* Profile Image Styling */
+.profile-icon {
+  font-size: 1.5rem; /* Adjust size as needed */
+  margin-right: 5px; /* Space between the icon and the username */
+  vertical-align: middle; /* Vertically align icon with text */
+}
+
+/* Dropdown Menu Styling */
+.navbar .dropdown-menu {
+  left: auto !important; /* Center align the dropdown menu horizontally relative to the dropdown trigger */
+  right: 0;
+  transform: translateX(0); /* Adjust if needed */
+}
+
+/* Align user name with image */
+.navbar .dropdown-item {
+  display: flex;
+  align-items: center;
+}
+
+.navbar .dropdown-item span {
+  margin-left: 10px; /* Space between image/icon and text */
+}
+
 
 

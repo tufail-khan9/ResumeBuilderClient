@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Navbar, Nav, Modal, NavDropdown } from 'react-bootstrap';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt, faAddressBook, faUser } from "@fortawesome/free-solid-svg-icons";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import LoginForm from './LoginForm';
 import RegistrationForm from './RegistrationForm';
 import ForgotPasswordForm from './ForgotPasswordForm';
@@ -13,16 +13,25 @@ const Menu = ({ isLoggedIn, onLogout, onLogin, user, setUser }) => {
   const [showModal, setShowModal] = useState(false);
   const [formType, setFormType] = useState('login');
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   const handleShow = () => setShowModal(true);
-  const handleClose = () => {
-    setShowModal(false);
-    setFormType('login');
-  };
+  const handleClose = () => setShowModal(false);
 
   const toggleForm = (type) => {
     setFormType(type);
     handleShow();
+  };
+
+  const handleSuccessfulLogin = (userData) => {
+    onLogin(userData);
+    handleClose();
+    navigate('/dummyPage');
+  };
+
+  const handleLogoutClick = () => {
+    onLogout();
+    navigate('/');
   };
 
   useEffect(() => {
@@ -65,7 +74,7 @@ const Menu = ({ isLoggedIn, onLogout, onLogin, user, setUser }) => {
                 ref={dropdownRef}
               >
                 <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
-                <NavDropdown.Item onClick={onLogout}>Logout</NavDropdown.Item>
+                <NavDropdown.Item onClick={handleLogoutClick}>Logout</NavDropdown.Item>
               </NavDropdown>
             )}
           </Nav>
@@ -79,7 +88,7 @@ const Menu = ({ isLoggedIn, onLogout, onLogin, user, setUser }) => {
             toggleForm={toggleForm}
             toggleForgotPassword={() => toggleForm('forgotPassword')}
             showSignUpLink={true}
-            onLogin={onLogin}
+            onLogin={handleSuccessfulLogin}
           />
         )}
         {formType === 'register' && <RegistrationForm toggleForm={toggleForm} setUser={setUser} />}

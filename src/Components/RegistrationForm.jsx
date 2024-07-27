@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { Form, Button, Alert, Col, Row } from "react-bootstrap";
-import axios from "axios";
+import axios from './AxiosConfig';
 import SuccessMessagePopup from "./SuccessMessagePopup";
 
 // Validation schema
@@ -51,7 +51,7 @@ function RegistrationForm({ toggleForm, setUser }) {
       }
     }
 
-    axios.post("http://localhost:5054/api/User/RegisterUser", formData, {
+    axios.post("User/RegisterUser", formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
