@@ -1,7 +1,8 @@
+// src/Components/Menu.js
 import React, { useState, useRef, useEffect } from 'react';
 import { Navbar, Nav, Modal, NavDropdown } from 'react-bootstrap';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignInAlt, faAddressBook, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faSignInAlt, faAddressBook, faUser, faTachometerAlt, faFileAlt, faUserShield } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from 'react-router-dom';
 import LoginForm from './LoginForm';
 import RegistrationForm from './RegistrationForm';
@@ -26,12 +27,12 @@ const Menu = ({ isLoggedIn, onLogout, onLogin, user, setUser }) => {
   const handleSuccessfulLogin = (userData) => {
     onLogin(userData);
     handleClose();
-    navigate('/dummyPage');
+    navigate('/dummypage'); // Navigate to DummyPage
   };
 
   const handleLogoutClick = () => {
     onLogout();
-    navigate('/');
+    navigate('/'); // Redirect to homepage or any public page
   };
 
   useEffect(() => {
@@ -51,9 +52,22 @@ const Menu = ({ isLoggedIn, onLogout, onLogin, user, setUser }) => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
           <Nav className="ml-auto">
-            <Nav.Link as={Link} to="/homePage">
+            {/* <Nav.Link as={Link} to="/homePage">
               <FontAwesomeIcon icon={faAddressBook} /> HomePage
-            </Nav.Link>
+            </Nav.Link> */}
+            {isLoggedIn && (
+              <>
+                {/* <Nav.Link as={Link} to="/dashboard">
+                  <FontAwesomeIcon icon={faTachometerAlt} /> Dashboard
+                </Nav.Link>
+                <Nav.Link as={Link} to="/myresume">
+                  <FontAwesomeIcon icon={faFileAlt} /> My Resume
+                </Nav.Link>
+                <Nav.Link as={Link} to="/admin">
+                  <FontAwesomeIcon icon={faUserShield} /> Admin
+                </Nav.Link> */}
+              </>
+            )}
             {!isLoggedIn ? (
               <Nav.Link href="#" onClick={() => toggleForm('login')}>
                 <FontAwesomeIcon icon={faSignInAlt} /> Login

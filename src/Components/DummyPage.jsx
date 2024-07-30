@@ -1,3 +1,4 @@
+// src/Components/DummyPage.js
 import React from 'react';
 import './DummyPage.css';
 import { useNavigate } from 'react-router-dom';
@@ -6,8 +7,8 @@ export default function DummyPage({ onCreateResume }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    console.log("Navigating to /resumeForm");
-    navigate("/resumeForm");
+    console.log("Navigating to /resumeform"); // Ensure this path matches the route exactly
+    navigate("/resumeform");
   };
 
   return (

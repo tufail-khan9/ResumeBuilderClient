@@ -11,11 +11,13 @@ const HomePage = ({ username }) => {
   const [showData, setShowData] = useState([]);
   const [show, setShow] = useState(false);
   const [createMode, setCreateMode] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  //const [confirmPassword, setConfirmPassword] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [userType, setUserType] = useState('');
 
@@ -23,7 +25,8 @@ const HomePage = ({ username }) => {
   const [editUserName, setEditUserName] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editPassword, setEditPassword] = useState('');
-  const [editConfirmPassword, setEditConfirmPassword] = useState('');
+  //const [editConfirmPassword, setEditConfirmPassword] = useState('');
+  const [editImageUrl, setEditImageUrl] = useState('');
   const [editContactNumber, setEditContactNumber] = useState('');
   const [editUserType, setEditUserType] = useState('');
 
@@ -75,7 +78,8 @@ const HomePage = ({ username }) => {
       setEditUserName(user.userName);
       setEditEmail(user.email);
       setEditPassword(user.password);
-      setEditConfirmPassword(user.confirmPassword);
+      // setEditConfirmPassword(user.confirmPassword);
+      setEditImageUrl(user.imageUrl);
       setEditContactNumber(user.contactNumber);
       setEditUserType(user.userType);
       handleShow(false);
@@ -88,7 +92,8 @@ const HomePage = ({ username }) => {
       userName: editUserName,
       email: editEmail,
       password: editPassword,
-      confirmPassword: editConfirmPassword,
+      // confirmPassword: editConfirmPassword,
+      imageUrl: editImageUrl,
       contactNumber: editContactNumber,
       userType: editUserType
     };
@@ -108,6 +113,13 @@ const HomePage = ({ username }) => {
     }
   };
 
+  const filteredData = showData.filter(user =>
+    user.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.contactNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.userType.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
       <Container fluid>
@@ -119,28 +131,40 @@ const HomePage = ({ username }) => {
             </Button>
           </Col>
         </Row>
-        <Table striped bordered hover>
+        <Row>
+          <Col className="mt-1">
+            <Form.Control
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ width: '20%' }}
+            />
+          </Col>
+        </Row>
+        <Table striped bordered hover className="mt-3">
           <thead>
             <tr>
               <th>#</th>
               <th>User Name</th>
               <th>Email</th>
               <th>Password</th>
-              <th>Confirm Password</th>
+              {/* <th>Confirm Password</th> */}
+              <th>User Image</th>
               <th>Contact Number</th>
               <th>User Type</th>
               <th colSpan={2}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {showData.map((item, index) => (
-              
+            {filteredData.map((item, index) => (
               <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{item.userName}</td>
                 <td>{item.email}</td>
                 <td>{item.password}</td>
-                <td>{item.confirmPassword}</td>
+                {/* <td>{item.confirmPassword}</td> */}
+                <td><img src={item.imageUrl} alt="User" style={{ width: '50px', height: '50px', objectFit: 'cover' }} /></td>
                 <td>{item.contactNumber}</td>
                 <td>{item.userType}</td>
                 <td className="actions">
@@ -173,8 +197,12 @@ const HomePage = ({ username }) => {
                 <Col><Form.Control type="password" placeholder="Enter Password" value={createMode ? password : editPassword} onChange={(e) => createMode ? setPassword(e.target.value) : setEditPassword(e.target.value)} /></Col>
               </Row>
 
-              <Row className="mb-3">
+              {/* <Row className="mb-3">
                 <Col><Form.Control type="password" placeholder="Confirm Password" value={createMode ? confirmPassword : editConfirmPassword} onChange={(e) => createMode ? setConfirmPassword(e.target.value) : setEditConfirmPassword(e.target.value)} /></Col>
+              </Row> */}
+
+              <Row className="mb-3">
+                <Col><Form.Control type="text" placeholder="Enter Image URL" value={createMode ? imageUrl : editImageUrl} onChange={(e) => createMode ? setImageUrl(e.target.value) : setEditImageUrl(e.target.value)} /></Col>
               </Row>
 
               <Row className="mb-3">

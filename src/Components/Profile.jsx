@@ -1,6 +1,8 @@
 // src/components/Profile.js
 import React, { useEffect, useState } from 'react';
 import './Profile.css'; // Optional: for custom styles
+import axios from './AxiosConfig';
+
 
 const Profile = ({ userId, setUser }) => {
   const [user, setUserState] = useState(null);
@@ -8,7 +10,6 @@ const Profile = ({ userId, setUser }) => {
   const [formData, setFormData] = useState({
     UserName: '',
     Email: '',
-    Password: '',
     ContactNumber: '',
     UserType: '',
   });
@@ -16,27 +17,22 @@ const Profile = ({ userId, setUser }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`http://localhost:5054/api/User/GetSingleUser?id=${userId}`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const userData = await response.json();
-        setUserState(userData);
+        const { data } = await axios.get(`User/GetSingleUser?id=${userId}`);
+        setUserState(data);
         setFormData({
-          UserName: userData.userName,
-          Email: userData.email,
-          ContactNumber: userData.contactNumber,
-          UserType: userData.userType,
+          UserName: data.userName,
+          Email: data.email,
+          ContactNumber: data.contactNumber,
+          UserType: data.userType,
         });
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
-
-    if (userId) {
-      fetchUserData();
-    }
+    if (userId) fetchUserData();
   }, [userId]);
+
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -44,20 +40,11 @@ const Profile = ({ userId, setUser }) => {
   };
 
   const handleSave = async () => {
+    debugger;
     try {
-      const response = await fetch('http://localhost:5054/api/User/UpdateUser', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const updatedUser = await response.json();
-      setUserState(updatedUser);
-      if (setUser) setUser(updatedUser); // Update the user in App.js if setUser is provided
+      const { data } = await axios.put('User/UpdateUser', formData);
+      setUserState(data);
+      if (setUser) setUser(data); // Update the user in App.js if setUser is provided
       setEditMode(false);
     } catch (error) {
       console.error('Error updating user data:', error);
@@ -96,17 +83,6 @@ const Profile = ({ userId, setUser }) => {
               id="Email"
               name="Email"
               value={formData.Email}
-              onChange={handleInputChange}
-              disabled={!editMode}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="Password">Password:</label>
-            <input
-              type="password"
-              id="Password"
-              name="Password"
-              value={formData.Password}
               onChange={handleInputChange}
               disabled={!editMode}
             />
