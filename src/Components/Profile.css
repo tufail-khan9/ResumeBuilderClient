@@ -1,15 +1,16 @@
 /* src/components/Profile.css */
 
 .profile-container {
-    padding: 20px;
-    max-width: 600px;
-    margin: 0 auto;
-    margin-top: 30px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    padding: 30px;
-  }
+  max-width: 600px;
+  margin: 0 auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  padding: 30px;
+  position: relative; /* Change to relative for positioning */
+  top: -10px; /* Move up by 10px */
+  left: -20px; /* Move left by 20px */
+}
   
   .profile-info {
     display: flex;

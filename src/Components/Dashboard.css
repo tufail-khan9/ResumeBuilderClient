@@ -1,18 +1,23 @@
 /* Dashboard.css */
 .dashboard {
+  display:inline; /* Use flexbox for layout */
   min-height: 80vh;
 }
 
 .left-section {
   background-color: #e7ecf1; /* Light grey background color for the left section */
-  padding: 20px;
+  padding: 10px;
   text-align: center;
+  width: 250px; /* Adjust width as needed */
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 .right-section {
-  background-color: #ffffff; /* White background color for the right section */
-  padding: 20px;
-  text-align: center;
+  background-color: #ffffff;
+  padding: 20px; /* Increase padding for better spacing */
+  text-align: left; /* Align text to the left for better readability */
+  flex: 1; /* Takes up the remaining space */
+  overflow-y: auto; /* Allows scrolling if content overflows */
 }
 
 .section-title {
@@ -23,7 +28,7 @@
   width: 200px;
   height: 60px;
   font-size: 18px;
-  margin: 8px 0; /* Reduced margin to 5px to decrease the gap */
+  margin: 8px 0; /* Reduced margin to decrease the gap */
   margin-left: 30px;
 }
 
@@ -50,4 +55,12 @@
   background-color: #e9ecef; /* Light grey background color for custom content */
   padding: 10px;
   border-radius: 5px;
+}
+@media (max-width: 768px) {
+  .left-section {
+    width: 100%; /* Make left section full width on small screens */
+  }
+  .right-section {
+    width: 100%; /* Ensure right section takes up full width */
+  }
 }

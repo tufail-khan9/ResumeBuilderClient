@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Button, Form, Table, Row, Col, Badge } from 'react-bootstrap';
+import { Button, Form, Table, Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faSave, faUser, faPhone, faEnvelope, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { faLinkedin, faGithub } from '@fortawesome/free-brands-svg-icons';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import axios from '../Components/AxiosConfig';
 
 const ResumeForm = () => {
-  const [userId, setUserId] = useState('1'); 
+  debugger;
+  const currentUserId = localStorage.getItem("userId");
+  const [userId, setUserId] = useState(currentUserId); 
   const [personalInfo, setPersonalInfo] = useState({
     image: '',
     name: '',
@@ -32,10 +32,10 @@ const ResumeForm = () => {
   const [newEducation, setNewEducation] = useState({ institution: '', degree: '', startDate: '', endDate: '' });
 
   const [skills, setSkills] = useState([]);
-  const [newSkill, setNewSkill] = useState('');
+  const [newSkill, setNewSkill] = useState({ id: '', name: '' });
 
   const [hobbies, setHobbies] = useState([]);
-  const [newHobby, setNewHobby] = useState('');
+  const [newHobby, setNewHobby] = useState({ id: '', name: '' });
 
   const handleChange = (e, setState) => {
     const { name, value } = e.target;
@@ -48,83 +48,89 @@ const ResumeForm = () => {
   };
 
   const addItem = (item, setItem, list, setList) => {
-    setList([...list, item]);
-    setItem('');
+    if (!item.name.trim()) return;
+    setList([...list, { ...item, id: Date.now().toString() }]);
+    setItem({ id: '', name: '' });
   };
 
   const handleKeyDown = (e, addFn, newItem, setNewItem) => {
-    if (e.key === 'Enter' && newItem.trim()) {
+    if (e.key === 'Enter' && newItem.name.trim()) {
       addFn();
-      setNewItem('');
+      setNewItem({ id: '', name: '' });
       e.preventDefault();
     }
   };
 
+  const addExperience = () => {
+    if (newExperience.company && newExperience.role && newExperience.startDate && newExperience.endDate) {
+      setExperiences([...experiences, { ...newExperience, id: Date.now().toString() }]);
+      setNewExperience({ company: '', role: '', startDate: '', endDate: '' });
+    }
+  };
+
+  const addEducation = () => {
+    if (newEducation.institution && newEducation.degree && newEducation.startDate && newEducation.endDate) {
+      setEducations([...educations, { ...newEducation, id: Date.now().toString() }]);
+      setNewEducation({ institution: '', degree: '', startDate: '', endDate: '' });
+    }
+  };
+
   const handleSave = () => {
-    const formatDate = (date) => {
-        return new Date(date).toISOString();
-    };
+    const formatDate = (date) => new Date(date).toISOString();
 
     const resumeData = {
-        personalInfo: {
-            image: personalInfo.image || "",
-            name: personalInfo.name,
-            designation: personalInfo.designation,
-            aboutMe: personalInfo.aboutMe,
-            userId: userId,
-        },
-        contactInfo: {
-            mobile: contactInfo.mobile,
-            email: contactInfo.email,
-            location: contactInfo.location,
-            linkedIn: contactInfo.linkedin,
-            gitHub: contactInfo.github,
-            website: contactInfo.website,
-            userId: userId,
-        },
-        experiences: experiences.map(exp => ({
-            company: exp.company,
-            role: exp.role,
-            startDate: formatDate(exp.startDate),
-            endDate: formatDate(exp.endDate),
-            userId: userId,
-        })),
-        educations: educations.map(edu => ({
-            institution: edu.institution,
-            degree: edu.degree,
-            startDate: formatDate(edu.startDate),
-            endDate: formatDate(edu.endDate),
-            userId: userId,
-        })),
-        skills: skills.map(skill => ({
-            name: skill.skill || "",
-            userId: userId,
-        })),
-        hobbies: hobbies.map(hobby => ({
-            name: hobby.hobby || "",
-            userId: userId,
-        })),
+      personalInfo: {
+        image: personalInfo.image || "",
+        name: personalInfo.name,
+        designation: personalInfo.designation,
+        aboutMe: personalInfo.aboutMe,
+        userId: userId,
+      },
+      contactInfo: {
+        mobile: contactInfo.mobile,
+        email: contactInfo.email,
+        location: contactInfo.location,
+        linkedIn: contactInfo.linkedin,
+        gitHub: contactInfo.github,
+        website: contactInfo.website,
+        userId: userId,
+      },
+      experiences: experiences.map(exp => ({
+        company: exp.company,
+        role: exp.role,
+        startDate: formatDate(exp.startDate),
+        endDate: formatDate(exp.endDate),
+        userId: userId,
+      })),
+      educations: educations.map(edu => ({
+        institution: edu.institution,
+        degree: edu.degree,
+        startDate: formatDate(edu.startDate),
+        endDate: formatDate(edu.endDate),
+        userId: userId,
+      })),
+      skills: skills.map(skill => ({
+        name: skill.name,
+        userId: userId,
+      })),
+      hobbies: hobbies.map(hobby => ({
+        name: hobby.name,
+        userId: userId,
+      })),
     };
 
-    // Log the data to ensure it's formatted correctly
-    console.log("Sending data to API:", resumeData);
-
     axios.post('PersonalInfo/SavePersonalInfo', resumeData)
-        .then(response => {
-            setSuccessMessage("Data saved successfully!");
-        })
-        .catch(error => {
-            setErrorMessage("There was an error saving the data!");
-            console.error("There was an error saving the data!", error);
-        });
-};
-
-
- 
+      .then(response => {
+        console.log("Data saved successfully!");
+      })
+      .catch(error => {
+        console.error("There was an error saving the data!", error);
+      });
+  };
 
   return (
     <div className="container mt-5">
-      <h2 className="text-primary mb-4">Personal Information</h2>
+      <h2 className="text-primary mb-4 text-start">Personal Information</h2>
       <Form onSubmit={handleSave}>
         <Row className="mb-3">
           <Col md={3} className="d-flex flex-column align-items-center">
@@ -141,7 +147,7 @@ const ResumeForm = () => {
               )}
             </Form.Group>
           </Col>
-          <Col md={3}>
+          <Col md={4}>
             <Form.Group>
               <Form.Label><FontAwesomeIcon icon={faUser} /> Name</Form.Label>
               <Form.Control
@@ -153,7 +159,7 @@ const ResumeForm = () => {
               />
             </Form.Group>
           </Col>
-          <Col md={3}>
+          <Col md={4}>
             <Form.Group>
               <Form.Label>Designation</Form.Label>
               <Form.Control
@@ -183,7 +189,7 @@ const ResumeForm = () => {
         </Row>
       </Form>
 
-      <h2 className="text-primary mt-5 mb-4">Contact Information</h2>
+      <h2 className="text-primary mt-5 mb-4 text-start">Contact Information</h2>
       <Form>
         <Row>
           <Col md={3}>
@@ -234,7 +240,7 @@ const ResumeForm = () => {
               />
             </Form.Group>
           </Col>
-          <Col md={3}>
+          <Col md={3} className='mt-3'>
             <Form.Group>
               <Form.Label><FontAwesomeIcon icon={faGithub} /> GitHub</Form.Label>
               <Form.Control
@@ -246,7 +252,7 @@ const ResumeForm = () => {
               />
             </Form.Group>
           </Col>
-          <Col md={3}>
+          <Col md={3} className='mt-3'>
             <Form.Group>
               <Form.Label>Website</Form.Label>
               <Form.Control
@@ -261,7 +267,7 @@ const ResumeForm = () => {
         </Row>
       </Form>
 
-      <h2 className="text-primary mt-5 mb-4">Work Experience</h2>
+      <h2 className="text-primary mt-5 mb-4 text-start">Work Experience</h2>
       <Form>
         <Row className="align-items-end">
           <Col md={3}>
@@ -272,7 +278,7 @@ const ResumeForm = () => {
                 name="company"
                 value={newExperience.company}
                 onChange={(e) => handleChange(e, setNewExperience)}
-                placeholder="Enter company name"
+                placeholder="Enter company"
               />
             </Form.Group>
           </Col>
@@ -311,14 +317,13 @@ const ResumeForm = () => {
             </Form.Group>
           </Col>
           <Col md={2} className="text-end">
-            <Button onClick={() => addItem(newExperience, setNewExperience, experiences, setExperiences)}>
-              <FontAwesomeIcon icon={faPlus} /> Add Experience
-            </Button>
-          </Col>
+        <Button className="mt-2" onClick={addExperience}>
+          <FontAwesomeIcon icon={faPlus} />Add Experience
+        </Button>
+        </Col>
         </Row>
-      </Form>
-
-      <h3 className="mt-5">Experience List</h3>
+       
+      </Form>&nbsp;
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -329,8 +334,8 @@ const ResumeForm = () => {
           </tr>
         </thead>
         <tbody>
-          {experiences.map((exp, index) => (
-            <tr key={index}>
+          {experiences.map((exp) => (
+            <tr key={exp.id}>
               <td>{exp.company}</td>
               <td>{exp.role}</td>
               <td>{exp.startDate}</td>
@@ -340,7 +345,8 @@ const ResumeForm = () => {
         </tbody>
       </Table>
 
-      <h2 className="text-primary mt-5 mb-4">Education</h2>
+      <h2 className="text-primary mt-5 mb-4 text-start">Education</h2>
+     
       <Form>
         <Row className="align-items-end">
           <Col md={3}>
@@ -351,7 +357,7 @@ const ResumeForm = () => {
                 name="institution"
                 value={newEducation.institution}
                 onChange={(e) => handleChange(e, setNewEducation)}
-                placeholder="Enter institution name"
+                placeholder="Enter institution"
               />
             </Form.Group>
           </Col>
@@ -390,14 +396,12 @@ const ResumeForm = () => {
             </Form.Group>
           </Col>
           <Col md={2} className="text-end">
-            <Button onClick={() => addItem(newEducation, setNewEducation, educations, setEducations)}>
-              <FontAwesomeIcon icon={faPlus} /> Add Education
-            </Button>
-          </Col>
+        <Button className="mt-2" onClick={addEducation}>
+          <FontAwesomeIcon icon={faPlus} /> Add Education
+        </Button></Col>
         </Row>
-      </Form>
-
-      <h3 className="mt-5">Education List</h3>
+       
+      </Form>&nbsp;
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -408,8 +412,8 @@ const ResumeForm = () => {
           </tr>
         </thead>
         <tbody>
-          {educations.map((edu, index) => (
-            <tr key={index}>
+          {educations.map((edu) => (
+            <tr key={edu.id}>
               <td>{edu.institution}</td>
               <td>{edu.degree}</td>
               <td>{edu.startDate}</td>
@@ -418,65 +422,61 @@ const ResumeForm = () => {
           ))}
         </tbody>
       </Table>
-
-      <h2 className="text-primary mt-5 mb-4">Skills</h2>
-      <Form>
-        <Row className="align-items-end">
-          <Col md={10}>
-            <Form.Group>
-              <Form.Label>Skill</Form.Label>
-              <Form.Control
-                type="text"
-                value={newSkill}
-                onChange={(e) => setNewSkill(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, () => setSkills([...skills, newSkill]), newSkill, setNewSkill)}
-                placeholder="Enter a skill and press Enter"
-              />
-            </Form.Group>
-          </Col>
-        </Row>
-      </Form>
-      <div className="mt-3">
-        {skills.map((skill, index) => (
-          <Badge key={index} pill className="mr-2 mb-2 bg-primary">
-            {skill}
-          </Badge>
+      <h2 className="text-primary mt-5 mb-4 text-start">Skills</h2>
+      <Row>
+          <Col md={4} className="d-flex align-items-center">
+      <Form.Group>
+        <Form.Control
+          type="text"
+          name="name"
+          value={newSkill.name}
+          onChange={(e) => handleChange(e, setNewSkill)}
+          placeholder="Enter skill"
+          onKeyDown={(e) => handleKeyDown(e, () => addItem(newSkill, setNewSkill, skills, setSkills), newSkill, setNewSkill)}
+        />
+      </Form.Group>
+      </Col>
+      <Col className="d-flex align-items-center">
+        <Button className="mt-2" onClick={() => addItem(newSkill, setNewSkill, skills, setSkills)}>
+          <FontAwesomeIcon icon={faPlus} /> Add Skill
+        </Button></Col>
+      </Row>&nbsp;
+      <ul>
+        {skills.map(skill => (
+          <li key={skill.id}>{skill.name}</li>
         ))}
-      </div>
+      </ul>
 
-      <h2 className="text-primary mt-5 mb-4">Hobbies</h2>
-      <Form>
-        <Row className="align-items-end">
-          <Col md={10}>
-            <Form.Group>
-              <Form.Label>Hobby</Form.Label>
-              <Form.Control
-                type="text"
-                value={newHobby}
-                onChange={(e) => setNewHobby(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, () => setHobbies([...hobbies, newHobby]), newHobby, setNewHobby)}
-                placeholder="Enter a hobby and press Enter"
-              />
-            </Form.Group>
-          </Col>
-        </Row>
-      </Form>
-      <div className="mt-3">
-        {hobbies.map((hobby, index) => (
-          <Badge key={index} pill className="mr-2 mb-2 bg-primary">
-            {hobby}
-          </Badge>
-        ))}
-      </div>
-
-      <div className="d-flex justify-content-end mt-5">
-        <Button onClick={handleSave} className="me-2">
-          <FontAwesomeIcon icon={faSave} /> Save
+      <h2 className="text-primary mt-3 mb-4 text-start">Hobbies</h2>
+      <Row >
+          <Col md={4} className="d-flex align-items-center">
+      <Form.Group>
+        <Form.Control
+          type="text"
+          name="name"
+          value={newHobby.name}
+          onChange={(e) => handleChange(e, setNewHobby)}
+          placeholder="Enter hobby"
+          onKeyDown={(e) => handleKeyDown(e, () => addItem(newHobby, setNewHobby, hobbies, setHobbies), newHobby, setNewHobby)}
+        />
+        
+      </Form.Group>
+      </Col>
+      <Col className="d-flex align-items-center">
+      <Button className="mt-2" onClick={() => addItem(newHobby, setNewHobby, hobbies, setHobbies)}>
+          <FontAwesomeIcon icon={faPlus} /> Add Hobby
         </Button>
-        {/* <Button onClick={handleSaveAndCreatePDF}>
-          <FontAwesomeIcon icon={faSave} /> Save & Create PDF
-        </Button> */}
-      </div>
+        </Col>
+        </Row>&nbsp;
+      <ul>
+        {hobbies.map(hobby => (
+          <li key={hobby.id}>{hobby.name}</li>
+        ))}
+      </ul>
+
+      <Button className="d-flex justify-content-end" onClick={handleSave}>
+        <FontAwesomeIcon icon={faSave} /> Save Resume
+      </Button>
     </div>
   );
 };
