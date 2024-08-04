@@ -1,5 +1,5 @@
-import React, { useState} from 'react';
-import { Button, Form, Table, Row, Col } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Button, Form, Row, Col, Table } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faPhone, faEnvelope, faMapMarkerAlt, faPlus, faSave, faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { faLinkedin, faGithub } from '@fortawesome/free-brands-svg-icons';
@@ -10,9 +10,9 @@ import './ResumeForm.css';
 
 const ResumeForm = () => {
   debugger;
-  const currentUserId = localStorage.getItem("userId");
-  //const currentUserId = 54;
-  const [userId, setUserId] = useState(currentUserId); 
+  const currentUserId = JSON.parse(localStorage.getItem("user"))?.id || null;
+  const [userId, setUserId] = useState(currentUserId);
+
   const [personalInfo, setPersonalInfo] = useState({
     image: '',
     name: '',
@@ -28,7 +28,7 @@ const ResumeForm = () => {
     github: '',
     website: '',
   });
-  
+
   const [experiences, setExperiences] = useState([]);
   const [newExperience, setNewExperience] = useState({ company: '', role: '', startDate: '', endDate: '', responsibilities: '' });
 
@@ -40,6 +40,17 @@ const ResumeForm = () => {
 
   const [hobbies, setHobbies] = useState([]);
   const [newHobby, setNewHobby] = useState({ id: '', name: '' });
+
+  useEffect(() => {
+    debugger;
+    const userId = localStorage.getItem('userId');
+    const profileImageUrl = localStorage.getItem('profileImageUrl');
+    
+    if (userId && profileImageUrl) {
+      setUserId(userId);
+      setPersonalInfo(prev => ({ ...prev, image: profileImageUrl })); // Set profile image URL in personalInfo state
+    }
+  }, []);
 
   const handleChange = (e, setState) => {
     const { name, value } = e.target;
@@ -80,7 +91,6 @@ const ResumeForm = () => {
   };
 
   const handleSave = () => {
-    debugger;
     const formatDate = (date) => new Date(date).toISOString();
 
     const resumeData = {
@@ -105,7 +115,7 @@ const ResumeForm = () => {
         role: exp.role,
         startDate: formatDate(exp.startDate),
         endDate: formatDate(exp.endDate),
-        responsibilities : exp.responsibilities,
+        responsibilities: exp.responsibilities,
         userId: userId,
       })),
       educations: educations.map(edu => ({
@@ -140,7 +150,7 @@ const ResumeForm = () => {
       console.error("No element found with ID 'resume-content'");
       return;
     }
-  
+
     html2canvas(input, { scale: 2 })
       .then((canvas) => {
         const imgData = canvas.toDataURL('image/png');
@@ -154,8 +164,6 @@ const ResumeForm = () => {
         console.error("Error generating PDF:", error);
       });
   };
-  
-  
 
   return (
     <div className="container mt-5 resume-form" id="resume-content">
@@ -166,15 +174,10 @@ const ResumeForm = () => {
             <Form.Group>
               <Form.Label>Image</Form.Label>
               <Form.Control type="file" onChange={handleFileChange} />
-              {personalInfo.image && (
-                <img
-                  src={personalInfo.image}
-                  alt="Profile"
-                  className="mt-3 rounded-circle profile-image"
-                />
-              )}
+              {personalInfo.image && <img src={personalInfo.image} alt="Profile" />}
             </Form.Group>
           </Col>
+          
           <Col md={9}>
             <Form.Group controlId="formName">
               <Form.Label><FontAwesomeIcon icon={faUser} /> Name</Form.Label>
@@ -525,3 +528,4 @@ const ResumeForm = () => {
 };
 
 export default ResumeForm;
+

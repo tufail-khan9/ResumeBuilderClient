@@ -27,24 +27,33 @@ function LoginForm({ toggleForgotPassword, showSignUpLink, onLogin, toggleForm, 
   const navigate = useNavigate();
 
   const handleLogin = async (data) => {
-    debugger;
     try {
       const response = await axios.get('User/LoginUser', {
         params: {
-          Email: data.email,
-          Password: data.password
+          email: data.email,
+          password: data.password
         }
       });
-
-      localStorage.setItem("userId", JSON.stringify(response.data.id)); // Corrected storage key
-      onLogin(response.data); // Pass user data to onLogin
+  
+      // Extract user data including image URL
+      const { id, imageUrl } = response.data;
+  
+      // Store user ID and profile image URL in local storage
+      localStorage.setItem("userId", JSON.stringify(id));
+      localStorage.setItem("profileImageUrl", JSON.stringify(imageUrl));
+  
+      // Pass user data to parent component
+      onLogin(response.data);
+  
+      // Close form and navigate to another page
       handleClose();
-      navigate('/dashboard/resumeForm'); // Correct path for navigation
+      navigate('/dashboard/resumeForm');
     } catch (error) {
       console.error('Login error:', error);
       setErrorMessage('Login failed. Please check your email and password.');
     }
   };
+  
 
   useEffect(() => {
     if (isSubmitted) {
