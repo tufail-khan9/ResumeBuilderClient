@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 import { Button, Form, Table, Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faSave, faUser, faPhone, faEnvelope, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faPhone, faEnvelope, faMapMarkerAlt, faPlus, faSave, faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { faLinkedin, faGithub } from '@fortawesome/free-brands-svg-icons';
 import axios from '../Components/AxiosConfig';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
+import './ResumeForm.css';
 
 const ResumeForm = () => {
   debugger;
   const currentUserId = localStorage.getItem("userId");
+  //const currentUserId = 54;
   const [userId, setUserId] = useState(currentUserId); 
   const [personalInfo, setPersonalInfo] = useState({
     image: '',
@@ -24,9 +28,9 @@ const ResumeForm = () => {
     github: '',
     website: '',
   });
-
+  
   const [experiences, setExperiences] = useState([]);
-  const [newExperience, setNewExperience] = useState({ company: '', role: '', startDate: '', endDate: '' });
+  const [newExperience, setNewExperience] = useState({ company: '', role: '', startDate: '', endDate: '', responsibilities: '' });
 
   const [educations, setEducations] = useState([]);
   const [newEducation, setNewEducation] = useState({ institution: '', degree: '', startDate: '', endDate: '' });
@@ -62,9 +66,9 @@ const ResumeForm = () => {
   };
 
   const addExperience = () => {
-    if (newExperience.company && newExperience.role && newExperience.startDate && newExperience.endDate) {
+    if (newExperience.company && newExperience.role && newExperience.startDate && newExperience.endDate && newExperience.responsibilities) {
       setExperiences([...experiences, { ...newExperience, id: Date.now().toString() }]);
-      setNewExperience({ company: '', role: '', startDate: '', endDate: '' });
+      setNewExperience({ company: '', role: '', startDate: '', endDate: '', responsibilities: '' });
     }
   };
 
@@ -76,11 +80,12 @@ const ResumeForm = () => {
   };
 
   const handleSave = () => {
+    debugger;
     const formatDate = (date) => new Date(date).toISOString();
 
     const resumeData = {
       personalInfo: {
-        image: personalInfo.image || "",
+        image: personalInfo.image,
         name: personalInfo.name,
         designation: personalInfo.designation,
         aboutMe: personalInfo.aboutMe,
@@ -100,6 +105,7 @@ const ResumeForm = () => {
         role: exp.role,
         startDate: formatDate(exp.startDate),
         endDate: formatDate(exp.endDate),
+        responsibilities : exp.responsibilities,
         userId: userId,
       })),
       educations: educations.map(edu => ({
@@ -128,10 +134,33 @@ const ResumeForm = () => {
       });
   };
 
+  const handleCreatePDF = () => {
+    const input = document.getElementById('resume-content');
+    if (!input) {
+      console.error("No element found with ID 'resume-content'");
+      return;
+    }
+  
+    html2canvas(input, { scale: 2 })
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = 210; // A4 width in mm
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save('resume.pdf');
+      })
+      .catch((error) => {
+        console.error("Error generating PDF:", error);
+      });
+  };
+  
+  
+
   return (
-    <div className="container mt-5">
+    <div className="container mt-5 resume-form" id="resume-content">
       <h2 className="text-primary mb-4 text-start">Personal Information</h2>
-      <Form onSubmit={handleSave}>
+      <Form>
         <Row className="mb-3">
           <Col md={3} className="d-flex flex-column align-items-center">
             <Form.Group>
@@ -141,160 +170,156 @@ const ResumeForm = () => {
                 <img
                   src={personalInfo.image}
                   alt="Profile"
-                  className="mt-3 rounded-circle"
-                  style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                  className="mt-3 rounded-circle profile-image"
                 />
               )}
             </Form.Group>
           </Col>
-          <Col md={4}>
-            <Form.Group>
+          <Col md={9}>
+            <Form.Group controlId="formName">
               <Form.Label><FontAwesomeIcon icon={faUser} /> Name</Form.Label>
               <Form.Control
                 type="text"
+                placeholder="Enter your name"
                 name="name"
                 value={personalInfo.name}
                 onChange={(e) => handleChange(e, setPersonalInfo)}
-                placeholder="Enter your name"
               />
             </Form.Group>
-          </Col>
-          <Col md={4}>
-            <Form.Group>
-              <Form.Label>Designation</Form.Label>
+
+            <Form.Group controlId="formDesignation">
+              <Form.Label><FontAwesomeIcon icon={faUser} /> Designation</Form.Label>
               <Form.Control
                 type="text"
+                placeholder="Enter your designation"
                 name="designation"
                 value={personalInfo.designation}
                 onChange={(e) => handleChange(e, setPersonalInfo)}
-                placeholder="Enter your designation"
               />
             </Form.Group>
-          </Col>
-        </Row>
-        <Row className="mt-3">
-          <Col md={9}>
-            <Form.Group>
+
+            <Form.Group controlId="formAboutMe">
               <Form.Label>About Me</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
+                placeholder="Tell something about yourself"
                 name="aboutMe"
                 value={personalInfo.aboutMe}
                 onChange={(e) => handleChange(e, setPersonalInfo)}
-                placeholder="Tell us about yourself"
               />
             </Form.Group>
           </Col>
         </Row>
-      </Form>
 
-      <h2 className="text-primary mt-5 mb-4 text-start">Contact Information</h2>
-      <Form>
-        <Row>
-          <Col md={3}>
-            <Form.Group>
-              <Form.Label><FontAwesomeIcon icon={faPhone} /> Mobile Number</Form.Label>
+        <h2 className="text-primary mb-4">Contact Information</h2>
+        <Row className="mb-3">
+          <Col>
+            <Form.Group controlId="formMobile">
+              <Form.Label><FontAwesomeIcon icon={faPhone} /> Mobile</Form.Label>
               <Form.Control
                 type="text"
+                placeholder="Enter your mobile number"
                 name="mobile"
                 value={contactInfo.mobile}
                 onChange={(e) => handleChange(e, setContactInfo)}
-                placeholder="Enter mobile number"
               />
             </Form.Group>
           </Col>
-          <Col md={3}>
-            <Form.Group>
+          <Col>
+            <Form.Group controlId="formEmail">
               <Form.Label><FontAwesomeIcon icon={faEnvelope} /> Email</Form.Label>
               <Form.Control
                 type="email"
+                placeholder="Enter your email"
                 name="email"
                 value={contactInfo.email}
                 onChange={(e) => handleChange(e, setContactInfo)}
-                placeholder="Enter email address"
-              />
-            </Form.Group>
-          </Col>
-          <Col md={3}>
-            <Form.Group>
-              <Form.Label><FontAwesomeIcon icon={faMapMarkerAlt} /> Location</Form.Label>
-              <Form.Control
-                type="text"
-                name="location"
-                value={contactInfo.location}
-                onChange={(e) => handleChange(e, setContactInfo)}
-                placeholder="Enter your location"
-              />
-            </Form.Group>
-          </Col>
-          <Col md={3}>
-            <Form.Group>
-              <Form.Label><FontAwesomeIcon icon={faLinkedin} /> LinkedIn</Form.Label>
-              <Form.Control
-                type="text"
-                name="linkedin"
-                value={contactInfo.linkedin}
-                onChange={(e) => handleChange(e, setContactInfo)}
-                placeholder="Enter LinkedIn profile"
-              />
-            </Form.Group>
-          </Col>
-          <Col md={3} className='mt-3'>
-            <Form.Group>
-              <Form.Label><FontAwesomeIcon icon={faGithub} /> GitHub</Form.Label>
-              <Form.Control
-                type="text"
-                name="github"
-                value={contactInfo.github}
-                onChange={(e) => handleChange(e, setContactInfo)}
-                placeholder="Enter GitHub profile"
-              />
-            </Form.Group>
-          </Col>
-          <Col md={3} className='mt-3'>
-            <Form.Group>
-              <Form.Label>Website</Form.Label>
-              <Form.Control
-                type="text"
-                name="website"
-                value={contactInfo.website}
-                onChange={(e) => handleChange(e, setContactInfo)}
-                placeholder="Enter your website"
               />
             </Form.Group>
           </Col>
         </Row>
-      </Form>
+        <Row className="mb-3">
+          <Col>
+            <Form.Group controlId="formLocation">
+              <Form.Label><FontAwesomeIcon icon={faMapMarkerAlt} /> Location</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your location"
+                name="location"
+                value={contactInfo.location}
+                onChange={(e) => handleChange(e, setContactInfo)}
+              />
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group controlId="formLinkedIn">
+              <Form.Label><FontAwesomeIcon icon={faLinkedin} /> LinkedIn</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your LinkedIn profile"
+                name="linkedin"
+                value={contactInfo.linkedin}
+                onChange={(e) => handleChange(e, setContactInfo)}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row className="mb-3">
+          <Col>
+            <Form.Group controlId="formGitHub">
+              <Form.Label><FontAwesomeIcon icon={faGithub} /> GitHub</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your GitHub profile"
+                name="github"
+                value={contactInfo.github}
+                onChange={(e) => handleChange(e, setContactInfo)}
+              />
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group controlId="formWebsite">
+              <Form.Label><FontAwesomeIcon icon={faMapMarkerAlt} /> Website</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your website URL"
+                name="website"
+                value={contactInfo.website}
+                onChange={(e) => handleChange(e, setContactInfo)}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
 
-      <h2 className="text-primary mt-5 mb-4 text-start">Work Experience</h2>
-      <Form>
-        <Row className="align-items-end">
-          <Col md={3}>
+        <h2 className="text-primary mb-4">Work Experience</h2>
+       
+        <Row>
+          <Col>
             <Form.Group>
               <Form.Label>Company</Form.Label>
               <Form.Control
                 type="text"
+                placeholder="Enter company"
                 name="company"
                 value={newExperience.company}
                 onChange={(e) => handleChange(e, setNewExperience)}
-                placeholder="Enter company"
               />
             </Form.Group>
           </Col>
-          <Col md={3}>
+          <Col>
             <Form.Group>
               <Form.Label>Role</Form.Label>
               <Form.Control
                 type="text"
+                placeholder="Enter role"
                 name="role"
                 value={newExperience.role}
                 onChange={(e) => handleChange(e, setNewExperience)}
-                placeholder="Enter role"
               />
             </Form.Group>
           </Col>
-          <Col md={2}>
+          <Col>
             <Form.Group>
               <Form.Label>Start Date</Form.Label>
               <Form.Control
@@ -305,7 +330,7 @@ const ResumeForm = () => {
               />
             </Form.Group>
           </Col>
-          <Col md={2}>
+          <Col>
             <Form.Group>
               <Form.Label>End Date</Form.Label>
               <Form.Control
@@ -316,64 +341,74 @@ const ResumeForm = () => {
               />
             </Form.Group>
           </Col>
-          <Col md={2} className="text-end">
-        <Button className="mt-2" onClick={addExperience}>
-          <FontAwesomeIcon icon={faPlus} />Add Experience
-        </Button>
-        </Col>
         </Row>
-       
-      </Form>&nbsp;
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Company</th>
-            <th>Role</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {experiences.map((exp) => (
-            <tr key={exp.id}>
-              <td>{exp.company}</td>
-              <td>{exp.role}</td>
-              <td>{exp.startDate}</td>
-              <td>{exp.endDate}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+        <Form.Group controlId="formResponsibilities">
+          <Form.Label>Responsibilities</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            placeholder="Enter responsibilities"
+            name="responsibilities"
+            value={newExperience.responsibilities}
+            onChange={(e) => handleChange(e, setNewExperience)}
+          />
+        </Form.Group>
+        <Button className="mt-2" variant="secondary" onClick={addExperience}>
+          <FontAwesomeIcon icon={faPlus} /> Add Experience
+        </Button>
+        <div className="table-container mt-3">
+          <Table className="table">
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Role</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Responsibilities</th>
+              </tr>
+            </thead>
+            <tbody>
+              {experiences.map((exp) => (
+                <tr key={exp.id}>
+                  <td>{exp.company}</td>
+                  <td>{exp.role}</td>
+                  <td>{exp.startDate}</td>
+                  <td>{exp.endDate}</td>
+                  <td>{exp.responsibilities}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
 
-      <h2 className="text-primary mt-5 mb-4 text-start">Education</h2>
-     
-      <Form>
-        <Row className="align-items-end">
-          <Col md={3}>
+        <h2 className="text-primary mb-4">Education</h2>
+       
+        <Row>
+          <Col>
             <Form.Group>
               <Form.Label>Institution</Form.Label>
               <Form.Control
                 type="text"
+                placeholder="Enter institution"
                 name="institution"
                 value={newEducation.institution}
                 onChange={(e) => handleChange(e, setNewEducation)}
-                placeholder="Enter institution"
               />
             </Form.Group>
           </Col>
-          <Col md={3}>
+          <Col>
             <Form.Group>
               <Form.Label>Degree</Form.Label>
               <Form.Control
                 type="text"
+                placeholder="Enter degree"
                 name="degree"
                 value={newEducation.degree}
                 onChange={(e) => handleChange(e, setNewEducation)}
-                placeholder="Enter degree"
               />
             </Form.Group>
           </Col>
-          <Col md={2}>
+          <Col>
             <Form.Group>
               <Form.Label>Start Date</Form.Label>
               <Form.Control
@@ -384,7 +419,7 @@ const ResumeForm = () => {
               />
             </Form.Group>
           </Col>
-          <Col md={2}>
+          <Col>
             <Form.Group>
               <Form.Label>End Date</Form.Label>
               <Form.Control
@@ -395,88 +430,96 @@ const ResumeForm = () => {
               />
             </Form.Group>
           </Col>
-          <Col md={2} className="text-end">
-        <Button className="mt-2" onClick={addEducation}>
-          <FontAwesomeIcon icon={faPlus} /> Add Education
-        </Button></Col>
         </Row>
-       
-      </Form>&nbsp;
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Institution</th>
-            <th>Degree</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {educations.map((edu) => (
-            <tr key={edu.id}>
-              <td>{edu.institution}</td>
-              <td>{edu.degree}</td>
-              <td>{edu.startDate}</td>
-              <td>{edu.endDate}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-      <h2 className="text-primary mt-5 mb-4 text-start">Skills</h2>
-      <Row>
-          <Col md={4} className="d-flex align-items-center">
-      <Form.Group>
-        <Form.Control
-          type="text"
-          name="name"
-          value={newSkill.name}
-          onChange={(e) => handleChange(e, setNewSkill)}
-          placeholder="Enter skill"
-          onKeyDown={(e) => handleKeyDown(e, () => addItem(newSkill, setNewSkill, skills, setSkills), newSkill, setNewSkill)}
-        />
-      </Form.Group>
-      </Col>
-      <Col className="d-flex align-items-center">
-        <Button className="mt-2" onClick={() => addItem(newSkill, setNewSkill, skills, setSkills)}>
-          <FontAwesomeIcon icon={faPlus} /> Add Skill
-        </Button></Col>
-      </Row>&nbsp;
-      <ul>
-        {skills.map(skill => (
-          <li key={skill.id}>{skill.name}</li>
-        ))}
-      </ul>
-
-      <h2 className="text-primary mt-3 mb-4 text-start">Hobbies</h2>
-      <Row >
-          <Col md={4} className="d-flex align-items-center">
-      <Form.Group>
-        <Form.Control
-          type="text"
-          name="name"
-          value={newHobby.name}
-          onChange={(e) => handleChange(e, setNewHobby)}
-          placeholder="Enter hobby"
-          onKeyDown={(e) => handleKeyDown(e, () => addItem(newHobby, setNewHobby, hobbies, setHobbies), newHobby, setNewHobby)}
-        />
-        
-      </Form.Group>
-      </Col>
-      <Col className="d-flex align-items-center">
-      <Button className="mt-2" onClick={() => addItem(newHobby, setNewHobby, hobbies, setHobbies)}>
-          <FontAwesomeIcon icon={faPlus} /> Add Hobby
+        <Button className="mt-2" variant="secondary" onClick={addEducation}>
+          <FontAwesomeIcon icon={faPlus} /> Add Education
         </Button>
-        </Col>
-        </Row>&nbsp;
-      <ul>
-        {hobbies.map(hobby => (
-          <li key={hobby.id}>{hobby.name}</li>
-        ))}
-      </ul>
+        <div className="table-container mt-4">
+          <Table className="table">
+            <thead>
+              <tr>
+                <th>Institution</th>
+                <th>Degree</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {educations.map((edu) => (
+                <tr key={edu.id}>
+                  <td>{edu.institution}</td>
+                  <td>{edu.degree}</td>
+                  <td>{edu.startDate}</td>
+                  <td>{edu.endDate}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+        <h2 className="text-primary mb-4">Skills</h2>
+        <ul>
+          {skills.map((skill) => (
+            <li key={skill.id}>{skill.name}</li>
+          ))}
+        </ul>
+        <Row>
+          <Col md={10}>
+            <Form.Group>
+              <Form.Label>Skill</Form.Label>
+              <Form.Control
+                type="text" 
+                name="name"
+                placeholder="Enter skill"
+                onChange={(e) => handleChange(e, setNewSkill)}
+                value={newSkill.name}
+                              
+                onKeyDown={(e) => handleKeyDown(e, () => addItem(newSkill, setNewSkill, skills, setSkills), newSkill, setNewSkill)}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={2} className="d-flex align-items-end">
+            <Button variant="secondary" onClick={() => addItem(newSkill, setNewSkill, skills, setSkills)}>
+              <FontAwesomeIcon icon={faPlus} /> Add
+            </Button>
+          </Col>
+        </Row>
 
-      <Button className="d-flex justify-content-end" onClick={handleSave}>
-        <FontAwesomeIcon icon={faSave} /> Save Resume
-      </Button>
+        <h2 className="text-primary mb-4">Hobbies</h2>
+        <ul>
+          {hobbies.map((hobby) => (
+            <li key={hobby.id}>{hobby.name}</li>
+          ))}
+        </ul>
+        <Row>
+          <Col md={10}>
+            <Form.Group>
+              <Form.Label>Hobby</Form.Label>
+              <Form.Control
+                type="text"
+                 name="name"
+                placeholder="Enter hobby"
+                value={newHobby.name}
+                onChange={(e) => handleChange(e, setNewHobby)}
+                onKeyDown={(e) => handleKeyDown(e, () => addItem(newHobby, setNewHobby, hobbies, setHobbies), newHobby, setNewHobby)}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={2} className="d-flex align-items-end">
+            <Button variant="secondary" onClick={() => addItem(newHobby, setNewHobby, hobbies, setHobbies)}>
+              <FontAwesomeIcon icon={faPlus} /> Add
+            </Button>
+          </Col>
+        </Row>
+
+        <div className="mt-4">
+          <Button variant="primary" onClick={handleSave}>
+            <FontAwesomeIcon icon={faSave} /> Save
+          </Button>
+          <Button variant="danger" onClick={handleCreatePDF} className="ms-2">
+            <FontAwesomeIcon icon={faFilePdf} /> Download as PDF
+          </Button>
+        </div>
+      </Form>
     </div>
   );
 };

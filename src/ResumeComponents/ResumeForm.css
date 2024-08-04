@@ -1,0 +1,161 @@
+Reset some basic elements
+body, h1, h2, h3, h4, h5, h6, p, ul, ol, li, table, tr, th, td, div, input, textarea, select, button {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Main container styling */
+  .container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    background-color: #f7f7f7;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Section headings */
+  h2 {
+    color: #333;
+    font-size: 1em;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+  }
+  
+  /* Form styling */
+  form {
+    margin-bottom: 30px;
+  }
+  
+  form .form-group {
+    margin-bottom: 15px;
+  }
+  
+  form label {
+    font-weight: bold;
+    color: #555;
+  }
+  
+  form .form-control {
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  form .form-control::placeholder {
+    color: #aaa;
+  }
+  
+  img {
+    max-width: 100px;
+    height: auto;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+  }
+  
+  /* Buttons */
+  button, .btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  
+  button:hover, .btn:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Table styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  table thead {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  table th, table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+  
+  table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  /* List styling */
+  ul {
+    list-style-type: disc;
+    padding-left: 20px;
+  }
+  
+  ul li {
+    margin-bottom: 5px;
+  }
+  
+  /* Custom input file */
+  .custom-file-input {
+    cursor: pointer;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .custom-file-input:hover {
+    border-color: #007bff;
+  }
+  
+  /* Responsive styling */
+  @media (max-width: 768px) {
+    .container {
+      padding: 10px;
+    }
+  
+    /* h2 {
+      font-size: 1.2em;
+    }
+   */
+    button, .btn {
+      width: 100%;
+    }
+  }
+/* Styling for the resume form container */
+.resume-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Styling for form headers */
+  .resume-form h2 {
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+  
+  /* Styling for buttons */
+  .resume-form .btn {
+    margin-top: 10px;
+  }
+  
+  /* Styling for profile image */
+  .profile-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+    

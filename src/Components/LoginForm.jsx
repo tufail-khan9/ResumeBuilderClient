@@ -36,7 +36,7 @@ function LoginForm({ toggleForgotPassword, showSignUpLink, onLogin, toggleForm, 
         }
       });
 
-      localStorage.setItem("user", JSON.stringify(response.data)); // Corrected storage key
+      localStorage.setItem("userId", JSON.stringify(response.data.id)); // Corrected storage key
       onLogin(response.data); // Pass user data to onLogin
       handleClose();
       navigate('/dashboard/resumeForm'); // Correct path for navigation

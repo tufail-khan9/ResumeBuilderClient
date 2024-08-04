@@ -19,6 +19,7 @@ const validationSchema = Yup.object().shape({
   contactNumber: Yup.string().required("Contact Number is required"),
   userType: Yup.string().required("User Type is required"),
   imageUrl: Yup.mixed()
+  
 });
 
 function RegistrationForm({ toggleForm, setUser }) {
